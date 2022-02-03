@@ -1,0 +1,8 @@
+boost_1_77_0/
+packages/
+**/x64
+.vs/
+.sln
+**/*.vcxproj
+**/*.vcxproj.filters
+**/*.vcxproj.user
