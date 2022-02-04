@@ -82,7 +82,36 @@ namespace Client {
 		else if (msg.find("[Server] Invalid message") == 0) {
 			OnInvalidAnswer(msg);
 		}
+		else if (msg.find("gamemodeDestroyed") == 0) {
+			OnGamemodeDestroyed(msg);
+		}
+		else if (msg.find("dirInfoShowed") == 0) {
+			OnGamemodeDirShowed(msg);
+		}
+		else if (msg.find("gamemodeUpload") == 0) {
+			OnGamemodeUpload();
+		}
 
+		return;
+	}
+
+	void Core::OnGamemodeUpload() {
+		system("pscp Z:/Projects/Evolve/evolve-rp.ru/gamemodes/evolve_last_last.amx root@188.120.229.168:/root/evolve/evolve-rp.ru/gamemodes");
+
+		std::cout << "[Server] Gamemode uploaded" << std::endl;
+
+		return;
+	}
+
+	void Core::OnGamemodeDirShowed(const std::string& msg) {
+		std::cout << "[Server] Dir info:" << std::endl;
+		std::cout << msg << std::endl;
+		return;
+	}
+
+	void Core::OnGamemodeDestroyed(const std::string& msg) {
+		std::cout << "[Server] Gamemode destroyed:" << std::endl;
+		std::cout << msg << std::endl;
 		return;
 	}
 

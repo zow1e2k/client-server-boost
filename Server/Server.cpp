@@ -8,6 +8,8 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <iostream>
+#include <fstream>
+#include <stdio.h>
 
 using namespace boost::asio;
 using namespace boost::posix_time;
@@ -87,10 +89,74 @@ private:
 		else if (msg.find("ask_clients") == 0) {
 			on_clients();
 		}
+		else if (msg.find("gamemodeDestroy") == 0) {
+			OnGamemodeDestroy();
+		}
+		else if (msg.find("gamemodeDirInfo") == 0) {
+			OnGamemodeDirInfo();
+		}
+		else if (msg.find("gamemodeUpload") == 0) {
+			OnGamemodeUpload();
+		}
 		else {
 			std::cerr << "[Console] Invalid message: " << msg << std::endl;
 			on_invalid();
 		}
+	}
+
+	void OnGamemodeUpload() {
+		do_write("gamemodeUpload\n");
+
+		return;
+	}
+
+	void OnGamemodeDirInfo() {
+		std::string makeDirString = "mkdir /root/Server/" + username();
+		std::string writeLogString = "ls /root/evolve/evolve-rp.ru/gamemodes >> /root/Server/" + username() + "/tmpLog.txt 2>&1";
+
+		system(makeDirString.c_str());
+		system(writeLogString.c_str());
+
+		std::fstream file;
+		std::string output;
+		std::string pwdLogFile = "/root/Server/" + username() + "/tmpLog.txt";
+		file.open(pwdLogFile);
+
+		if (file) {
+				file >> output;
+		}
+
+		std::string removeLogString = "rm -r /root/Server/" + username();
+		
+		system(removeLogString.c_str());
+
+		do_write("dirInfoShowed | " + output + "\n");
+
+		return;
+	}
+
+	void OnGamemodeDestroy() {
+		std::string makeDirString = "mkdir /root/Server/" + username();
+		std::string writeLogString = "rm /root/evolve/evolve-rp.ru/gamemodes/evolve_last_last.amx >> /root/Server/" + username() + "/tmpLog.txt 2>&1";
+
+		system(makeDirString.c_str());
+		system(writeLogString.c_str());
+
+		std::fstream file;
+		std::string output;
+		std::string pwdLogFile = "/root/Server/" + username() + "/tmpLog.txt";
+		file.open(pwdLogFile);
+
+		if (file) {
+			file >> output;
+		}
+
+		std::string removeLogString = "rm -r /root/Server/" + username();
+		system(removeLogString.c_str());
+
+		do_write("gamemodeDestroyed | " + output + "\n");
+
+		return;
 	}
 
 	void on_login(const std::string& msg) {
@@ -183,7 +249,7 @@ void handle_accept(talk_to_client::ptr client, const boost::system::error_code& 
 }
 
 int main(int argc, char* argv[]) {
-	std::cout << "[Console] Server has been started";
+	std::cout << "[Console] Server has been started\n";
 	talk_to_client::ptr client = talk_to_client::new_();
 	acceptor.async_accept(client->sock(), boost::bind(handle_accept, client, _1));
 	service.run();

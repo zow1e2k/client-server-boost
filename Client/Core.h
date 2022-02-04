@@ -22,6 +22,9 @@ namespace Client {
 		void OnInvalidAnswer(const std::string& msg);
 		void OnClientsList(const std::string& msg);
 		void AskClients();
+		void OnGamemodeDestroyed(const std::string& msg);
+		void OnGamemodeDirShowed(const std::string& msg);
+		void OnGamemodeUpload();
 		
 		size_t read_complete(const boost::system::error_code& err, size_t bytes);
 
