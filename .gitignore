@@ -6,3 +6,6 @@ packages/
 **/*.vcxproj
 **/*.vcxproj.filters
 **/*.vcxproj.user
+Client/include/
+Client/lib/
+Client/Resources/
