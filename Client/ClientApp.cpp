@@ -17,8 +17,9 @@ namespace Client {
 
 	using namespace boost::asio;
 
-	ip::tcp::endpoint ep(ip::address::from_string("188.120.229.168"), 8001);
-	int run_client(const std::string& client_name) {
+	int run_client(const std::string& client_name, const std::string& ip) {
+		ip::tcp::endpoint ep(ip::address::from_string(ip), 8001);
+
 		io_service service;
 		ClientCore client(client_name, service);
 

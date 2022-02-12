@@ -15,25 +15,36 @@ namespace CEF {
 		CefString& exception
 	) {
 		if (name == "LoginInJS") {
-			if ((arguments.size() == 1) && arguments[0]->IsString()) {
-				CefString text = arguments[0]->GetStringValue();
+			if ((arguments.size() == 3) && arguments[0]->IsString() && arguments[1]->IsString() && arguments[2]->IsString()) {
+				CefString username = arguments[0]->GetStringValue();
+				CefString password = arguments[1]->GetStringValue();
+				CefString ip = arguments[2]->GetStringValue();
 
 				CefRefPtr<CefFrame> frame = CefV8Context::GetCurrentContext()->GetBrowser()->GetMainFrame();
 
 				std::string jscall = "";
 
-				if (Client::run_client(text) == 0) {
+				if (password.ToString() != "1597538624") {
 					jscall += "Login";
 					jscall += "('";
-					jscall += text;
-					jscall += " cannot connected";
+					jscall += username;
+					jscall += " invalid username and/or password";
 					jscall += "');";
 				} else {
-					jscall += "Login";
-					jscall += "('";
-					jscall += text;
-					jscall += " successfully connected";
-					jscall += "');";
+					if (Client::run_client(username, ip) == 0) {
+						jscall += "Login";
+						jscall += "('";
+						jscall += username;
+						jscall += " cannot connected";
+						jscall += "');";
+					}
+					else {
+						jscall += "Login";
+						jscall += "('";
+						jscall += username;
+						jscall += " successfully connected";
+						jscall += "');";
+					}
 				}
 
 				frame->ExecuteJavaScript(jscall, frame->GetURL(), 0);
