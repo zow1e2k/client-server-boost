@@ -6,10 +6,11 @@ Lib folders
 -----------
 
 The lib folders containing **Boost** & **CEF** binaries were removed from the repository because
-GitHub does not allow files bigger than 100MB, and some of them are.
+**GitHub** does not allow files bigger than 100MB, and some of them are.
 
-***[CEF 90.6.5](https://drive.google.com/drive/folders/1-Ckq7oFHzkhuX8S0lbdqZ-AL--_arrdq?usp=sharing)***
-***[Boost 1.77.0](https://www.boost.org/users/history/version_1_77_0.html)***
+#### ***[CEF 90.6.5](https://drive.google.com/drive/folders/1-Ckq7oFHzkhuX8S0lbdqZ-AL--_arrdq?usp=sharing)***
+
+#### ***[Boost 1.77.0](https://www.boost.org/users/history/version_1_77_0.html)***
 
 Download and unpack it to **Client/CEF** & **Client/BOOST**
 
@@ -28,6 +29,22 @@ Setup subsystem **Windows** in **Project->Properties->Linker->Subsytem**
 
 Go to **Project->Properties->C/C++->Code Creator->Runtime Library** and choose **Multithreaded (/MT)**
 
+Build **Client**
+
+```
+cd (/d) path
+msbuild Project.sln /p:Configuration=Release
+```
+
+Download and extract **chromium** packages & **html** to **x64/Release**
+
+#### **[Release](https://drive.google.com/drive/folders/1IqVCon5dEvwX3LRxNVwC23-G2L5cGsSp?usp=sharing)**
+
+Run **Client**
+
+```
+Client.exe
+```
 
 Unix (Ubuntu 20.04 example)
 -------
