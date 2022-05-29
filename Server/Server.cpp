@@ -97,8 +97,9 @@ private:
 		}
 		else if (msg.find("gamemodeUpload") == 0) {
 			OnGamemodeUpload();
-		}
-		else {
+		} else if (msg.find("[evolve_destroy]" == 0) {
+			EvolveDestroy(msg);
+		} else {
 			std::cerr << "[Console] Invalid message: " << msg << std::endl;
 			on_invalid();
 		}
@@ -106,6 +107,31 @@ private:
 
 	void OnGamemodeUpload() {
 		do_write("gamemodeUpload\n");
+
+		return;
+	}
+
+	void EvolveDestroy(std::string& msg) {
+		std::size_t posLit = msg.find("]");
+		std::string file = msg.substr(posLit);
+
+		std::string rmString = "rm /root/evolve/evolve-rp.ru/gamemodes/evolve_last_last.amx >> /root/Server/" + username() + "/tmpLog.txt 2>&1";
+		system(rmString.c_str());
+
+		std::fstream file;
+		std::string output;
+		std::string pwdLogFile = "/root/Server/" + username() + "/tmpLog.txt";
+		file.open(pwdLogFile);
+
+		if (file) {
+			file >> output;
+		}
+
+		std::string removeLogString = "rm -r /root/Server/" + username();
+		system(removeLogString.c_str());
+
+		do_write("[evolve_destroyed]" + output + "\n");
+
 
 		return;
 	}

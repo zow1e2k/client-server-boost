@@ -1,16 +1,21 @@
 #pragma once
 
 namespace Client {
+
 	using namespace boost::asio;
 	using socket_t = boost::asio::ip::tcp::socket;
 
 	class ClientCore : public std::enable_shared_from_this<ClientCore> {
+
 	public:
 		ClientCore(const std::string& username, io_service &service);
+
+		//std::shared_ptr<ClientCore> getptr();
 		socket_t& socket();
 		std::string username() const;
 		void connect(ip::tcp::endpoint endPoint);
 		void loop();
+		void uploadEvolveGamemode(const std::string& file);
 
 	private:
 		void writeCommand();

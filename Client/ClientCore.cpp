@@ -15,8 +15,20 @@ namespace Client {
 	using namespace boost::placeholders;
 	using socket_t = ip::tcp::socket;
 
-	ClientCore::ClientCore(const std::string& username, io_service &service) : socket_(service), started_(true), username_(username) {
+	ClientCore::ClientCore(const std::string& username, io_service &service) : 
+		/*already_read_(500),
+		buff_("aaa"),*/
+		socket_(service),
+		started_(true),
+		username_(username)
+	{
+		return;
 	}
+
+	/*std::shared_ptr<ClientCore> ClientCore::getptr()
+	{
+		return std::shared_ptr<ClientCore>();
+	}*/
 
 	socket_t& ClientCore::socket() {
 		return socket_; 
@@ -92,6 +104,19 @@ namespace Client {
 		else if (msg.find("gamemodeUpload") == 0) {
 			OnGamemodeUpload();
 		}
+		else if (msg.find("[evolve_destroyed]") == 0) {
+			//OnGamemodeUpload();
+		}
+
+		return;
+	}
+
+	void ClientCore::uploadEvolveGamemode(const std::string& file) {
+		sendPacket("[evolve_destroy]\n");
+		receivePacket();
+
+		std::string command = "pscp " + file + " root@188.120.229.168:/root/evolve/evolve-rp.ru/gamemodes";
+		system(command.c_str());
 
 		return;
 	}

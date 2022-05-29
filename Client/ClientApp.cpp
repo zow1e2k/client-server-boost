@@ -17,19 +17,25 @@ namespace Client {
 
 	using namespace boost::asio;
 
+	//std::shared_ptr<ClientCore> clientPtr;
+
 	int run_client(const std::string& client_name, const std::string& ip) {
 		ip::tcp::endpoint ep(ip::address::from_string(ip), 8001);
 
 		io_service service;
+		//ClientCore::ClientCore client = ClientCore::ClientCore(client_name, service);
 		ClientCore client(client_name, service);
+		//clientPtr = client.getptr(). //std::make_shared<ClientCore>(client);
+		//clientPtr = std::make_shared<ClientCore>(client_name, service);
 
 		try {
+			//clientPtr.get()->connect(ep);
 			client.connect(ep);
 			//client.loop();
 		}
 		catch (boost::system::system_error& err) {
-			std::cout << "client terminated " << client.username()
-				<< ": " << err.what() << std::endl;
+			/*std::cout << "client terminated " << clientPtr.get()->username()
+				<< ": " << err.what() << std::endl;*/
 			return 0;
 		}
 
@@ -37,21 +43,21 @@ namespace Client {
 	}
 
 	void start() {
-		//boost::thread_group threads;
+		/*boost::thread_group threads;
 
-		//threads.create_thread(boost::bind(Client::run_client, "zow1k"));
-		//boost::this_thread::sleep(boost::posix_time::millisec(100));
-		//threads.create_thread(boost::bind(CefRunMessageLoop));
-		//boost::this_thread::sleep(boost::posix_time::millisec(100));
+		threads.create_thread(boost::bind(Client::run_client, "zow1k"));
+		boost::this_thread::sleep(boost::posix_time::millisec(100));
+		threads.create_thread(boost::bind(CefRunMessageLoop));
+		boost::this_thread::sleep(boost::posix_time::millisec(100));
 
-		//threads.join_all();
+		threads.join_all();*/
 
 		return;
 	}
 }
 
-/*int main(int argc, char* argv[]) {
-	boost::thread_group threads;
+int main(int argc, char* argv[]) {
+	/*boost::thread_group threads;
 
 	std::cout << "You're welcome. Enter your name below\n";
 	std::string playerName;
@@ -60,7 +66,7 @@ namespace Client {
 	threads.create_thread(boost::bind(Client::run_client, playerName));
 	boost::this_thread::sleep(boost::posix_time::millisec(100));
 
-	threads.join_all();
+	threads.join_all();*/
 
 	return 1;
-}*/
+}

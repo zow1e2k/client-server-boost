@@ -23,18 +23,11 @@ namespace CEF {
 			"        native function CheckConnectInJS();"
 			"        return CheckConnectInJS(text);"
 			"	};"
+			"    app.EvolveUploadInJS = function(text) {"
+			"        native function EvolveUploadInJS();"
+			"        return EvolveUploadInJS(text);"
+			"	};"
 			"})();";
-
-		/*std::string appJS = "";
-		appJS += "var app;";
-		appJS += "if (!app)";
-		appJS += "	app = {};";
-		appJS += "(function()) {";
-		appJS += "	app.CheckConnectInJS = function(text) {";
-		appJS += "		native function CheckConnectInJS();";
-		appJS += "		return CheckConnectInJS(text);";
-		appJS += "	};";
-		appJS += "})();";*/
 
 		CefRegisterExtension("v8/app", appJS, new CEFV8Handler(this));
 	}

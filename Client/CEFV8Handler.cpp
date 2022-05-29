@@ -72,6 +72,23 @@ namespace CEF {
 
 				return true;
 			}
+		} else if (name == "EvolveUploadInJS") {
+			if ((arguments.size() == 1) && arguments[0]->IsString()) {
+				CefString file = arguments[0]->GetStringValue();
+				CefRefPtr<CefFrame> frame =
+					CefV8Context::GetCurrentContext()->GetBrowser()
+					->
+					GetMainFrame();
+
+				//Client::client.get()->uploadEvolveGamemode(file);
+
+				std::string jscall = "EvolveUpload('";
+				jscall += file;
+				jscall += " uploaded successfully');";
+				frame->ExecuteJavaScript(jscall, frame->GetURL(), 0);
+
+				return true;
+			}
 		}
 
 		return false;
