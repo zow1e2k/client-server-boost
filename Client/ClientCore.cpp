@@ -8,6 +8,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include "ClientCore.h"
+#include "CEFCore.h"
 
 namespace Client {
 
@@ -31,11 +32,18 @@ namespace Client {
 	}*/
 
 	socket_t& ClientCore::socket() {
+		//CEF::g_handler->GetBrowser();
 		return socket_; 
 	}
 
 	std::string ClientCore::username() const {
 		return username_;
+	}
+
+	void Client::ClientCore::execLS()
+	{
+		sendPacket("[get_ls]\n");
+		return;
 	}
 
 	void ClientCore::connect(ip::tcp::endpoint endPoint) {
@@ -48,11 +56,11 @@ namespace Client {
 		receivePacket();
 
 		while (started_) {
-			writeCommand();
+			sendPacket((std::string)"empty" + "\n");
 			receivePacket();
 
 			int millis = 2;
-			std::cout << username_ << " postpone ping " << millis << " ms" << std::endl;
+			//std::cout << username_ << " postpone ping " << millis << " ms" << std::endl;
 			boost::this_thread::sleep(boost::posix_time::millisec(millis));
 		}
 
@@ -60,27 +68,28 @@ namespace Client {
 	}
 
 	void ClientCore::writeCommand() {
-		std::string msg = "";
-		std::cout << "Insert the command\n";
-		std::cin >> msg;
+		//std::string msg = "";
+		//std::cout << "Insert the command\n";
+		//std::cin >> msg;
 		//msg.append("\n");
-		sendPacket(msg + "\n");
+		//sendPacket(msg + "\n");
 
 		return;
 	}
 
-	void ClientCore::receivePacket() {
+	std::string ClientCore::receivePacket() {
 		already_read_ = 0;
 		read(
 			socket_, buffer(buff_),
 			boost::bind(&ClientCore::read_complete, this, _1, _2)
 		);
-		parsePacket();
+		
+		std::string str = parsePacket();
 
-		return;
+		return str;
 	}
 
-	void ClientCore::parsePacket() {
+	std::string ClientCore::parsePacket() {
 		std::string msg(buff_, already_read_);
 
 		if (msg.find("login ") == 0) {
@@ -98,17 +107,18 @@ namespace Client {
 		else if (msg.find("gamemodeDestroyed") == 0) {
 			OnGamemodeDestroyed(msg);
 		}
-		else if (msg.find("dirInfoShowed") == 0) {
-			OnGamemodeDirShowed(msg);
-		}
 		else if (msg.find("gamemodeUpload") == 0) {
 			OnGamemodeUpload();
 		}
 		else if (msg.find("[evolve_destroyed]") == 0) {
 			//OnGamemodeUpload();
 		}
+		else if (msg.find("[dirInfoShowed]") == 0) {
+			OnDirInfoShowed(msg);
+			return msg;
+		}
 
-		return;
+		return "error";
 	}
 
 	void ClientCore::uploadEvolveGamemode(const std::string& file) {
@@ -129,9 +139,20 @@ namespace Client {
 		return;
 	}
 
-	void ClientCore::OnGamemodeDirShowed(const std::string& msg) {
-		std::cout << "[Server] Dir info:" << std::endl;
-		std::cout << msg << std::endl;
+	void ClientCore::OnDirInfoShowed(const std::string& msg) {
+		//CEF::CEFCore::
+		//std::cout << "[Server] Dir info:" << std::endl;
+		//std::cout << msg << std::endl;
+
+		//Client::getLS(msg);
+		
+		//CefRefPtr<CefFrame> frame = CefV8Context::GetCurrentContext()->GetBrowser()->GetMainFrame();
+		//std::string jscall = "";
+		//jscall += "showLS('";
+		//jscall += msg;
+		//jscall += "');";
+
+		//frame->ExecuteJavaScript(jscall, frame->GetURL(), 0);
 		return;
 	}
 

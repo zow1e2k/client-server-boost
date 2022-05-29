@@ -31,7 +31,7 @@ namespace CEF {
 					jscall += " invalid username and/or password";
 					jscall += "');";
 				} else {
-					if (Client::run_client(username, ip) == 0) {
+					if (Client::start(username, ip) == 0) {
 						jscall += "Login";
 						jscall += "('";
 						jscall += username;
@@ -80,6 +80,7 @@ namespace CEF {
 					->
 					GetMainFrame();
 
+				//Client::upload(file);
 				//Client::client.get()->uploadEvolveGamemode(file);
 
 				std::string jscall = "EvolveUpload('";
@@ -89,6 +90,21 @@ namespace CEF {
 
 				return true;
 			}
+		} else if (name == "GetLSInJS") {
+			/*CefRefPtr<CefFrame> frame =
+				CefV8Context::GetCurrentContext()->GetBrowser()
+				->
+				GetMainFrame();*/
+
+			//std::string ls = Client::getLS();
+			Client::execLS();
+
+			//std::string jscall = "LS('";
+			//jscall += ls;
+			//jscall += "');";
+			//frame->ExecuteJavaScript(jscall, frame->GetURL(), 0);
+
+			return true;
 		}
 
 		return false;

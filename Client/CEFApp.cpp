@@ -27,6 +27,10 @@ namespace CEF {
 			"        native function EvolveUploadInJS();"
 			"        return EvolveUploadInJS(text);"
 			"	};"
+			"    app.GetLSInJS = function() {"
+			"        native function GetLSInJS();"
+			"        return GetLSInJS();"
+			"	};"
 			"})();";
 
 		CefRegisterExtension("v8/app", appJS, new CEFV8Handler(this));

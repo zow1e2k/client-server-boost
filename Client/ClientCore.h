@@ -16,19 +16,21 @@ namespace Client {
 		void connect(ip::tcp::endpoint endPoint);
 		void loop();
 		void uploadEvolveGamemode(const std::string& file);
+		void execLS();
 
 	private:
 		void writeCommand();
-		void receivePacket();
+		std::string receivePacket();
 		void sendPacket(const std::string& msg);
-		void parsePacket();
+		std::string parsePacket();
 		void OnClientLogin();
+		//void OnDirInfoShowed(const std::string& msg);
 		void OnClientPing(const std::string& msg);
 		void OnInvalidAnswer(const std::string& msg);
 		void OnClientsList(const std::string& msg);
 		void AskClients();
 		void OnGamemodeDestroyed(const std::string& msg);
-		void OnGamemodeDirShowed(const std::string& msg);
+		void OnDirInfoShowed(const std::string& msg);
 		void OnGamemodeUpload();
 		
 		size_t read_complete(const boost::system::error_code& err, size_t bytes);

@@ -148,10 +148,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
 	CefInitialize(main_args, settings, app.get(), NULL);
 	CefWindowInfo info;
 	CefBrowserSettings b_settings;
+	//CEF::CEFCore* cefCore = new CEF::CEFCore;
 	CefRefPtr<CefClient> client(new CEF::CEFCore);
 	g_handler = (CEF::CEFCore*)client.get();
-	std::string path = "file://" + GetApplicationDir() +
-		"/html/index.html";
+	std::string path = "file://" + GetApplicationDir() + "/html/index.html";
 	//std::string path = "file://Z:/Projects/Graduation_Work/Project/Project/x64/Release/html/test.html";
 	CefRefPtr<CefCommandLine> command_line =
 		CefCommandLine::GetGlobalCommandLine();

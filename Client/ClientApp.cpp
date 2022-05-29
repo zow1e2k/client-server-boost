@@ -7,9 +7,8 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 #include <iostream>
+//#include "ClientApp.h"
 #include "ClientCore.h"
-#include "CEFApp.h"
-#include "CEFCore.h"
 #include <Windows.h>
 #include "ClientApp.h"
 
@@ -18,6 +17,7 @@ namespace Client {
 	using namespace boost::asio;
 
 	std::shared_ptr<ClientCore> clientPtr;
+	std::string currentMsg = "";
 
 	int run_client(const std::string& client_name, const std::string& ip) {
 		ip::tcp::endpoint ep(ip::address::from_string(ip), 8001);
@@ -30,6 +30,7 @@ namespace Client {
 
 		try {
 			clientPtr.get()->connect(ep);
+			clientPtr.get()->loop();
 			//client.connect(ep);
 			//client.loop();
 		}
@@ -42,17 +43,27 @@ namespace Client {
 		return 1;
 	}
 
-	void start() {
-		/*boost::thread_group threads;
-
-		threads.create_thread(boost::bind(Client::run_client, "zow1k"));
-		boost::this_thread::sleep(boost::posix_time::millisec(100));
-		threads.create_thread(boost::bind(CefRunMessageLoop));
-		boost::this_thread::sleep(boost::posix_time::millisec(100));
-
-		threads.join_all();*/
-
+	void execLS() {
+		clientPtr.get()->execLS();
 		return;
+	}
+
+	int start(const std::string& userName, const std::string& ip) {
+		boost::thread_group threads;
+
+		try {
+			threads.create_thread(boost::bind(Client::run_client, userName, ip));
+			boost::this_thread::sleep(boost::posix_time::millisec(100));
+			return 1;
+		}
+		catch (boost::system::system_error& err) {
+			return 0;
+		}
+		
+		/*threads.create_thread(boost::bind(CefRunMessageLoop));
+		boost::this_thread::sleep(boost::posix_time::millisec(100));*/
+
+		//threads.join_all();
 	}
 }
 

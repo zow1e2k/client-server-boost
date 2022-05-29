@@ -89,29 +89,29 @@ private:
 		else if (msg.find("ask_clients") == 0) {
 			on_clients();
 		}
-		else if (msg.find("gamemodeDestroy") == 0) {
-			OnGamemodeDestroy();
-		}
-		else if (msg.find("gamemodeDirInfo") == 0) {
+		else if (msg.find("[get_ls]") == 0) {
 			OnGamemodeDirInfo();
 		}
-		else if (msg.find("gamemodeUpload") == 0) {
+		/*else if (msg.find("gamemodeUpload") == 0) {
 			OnGamemodeUpload();
 		} else if (msg.find("[evolve_destroy]" == 0) {
 			EvolveDestroy(msg);
-		} else {
+		}  else if (msg.find("[evolve_destroy]" == 0) {
+			EvolveDestroy(msg);
+		}*/
+		else {
 			std::cerr << "[Console] Invalid message: " << msg << std::endl;
 			on_invalid();
 		}
 	}
 
-	void OnGamemodeUpload() {
+	/*void OnGamemodeUpload() {
 		do_write("gamemodeUpload\n");
 
 		return;
-	}
+	}*/
 
-	void EvolveDestroy(std::string& msg) {
+	/*void EvolveDestroy(std::string& msg) {
 		std::size_t posLit = msg.find("]");
 		std::string file = msg.substr(posLit);
 
@@ -134,10 +134,10 @@ private:
 
 
 		return;
-	}
+	}*/
 
 	void OnGamemodeDirInfo() {
-		std::string makeDirString = "mkdir /root/Server/" + username();
+		/*std::string makeDirString = "mkdir /root/Server/" + username();
 		std::string writeLogString = "ls /root/evolve/evolve-rp.ru/gamemodes >> /root/Server/" + username() + "/tmpLog.txt 2>&1";
 
 		system(makeDirString.c_str());
@@ -156,12 +156,11 @@ private:
 		
 		system(removeLogString.c_str());
 
-		do_write("dirInfoShowed | " + output + "\n");
-
-		return;
+		do_write("[dirInfoShowed] " + output + "\n");*/
+		do_write("[dirInfoShowed]\n");
 	}
 
-	void OnGamemodeDestroy() {
+	/*void OnGamemodeDestroy() {
 		std::string makeDirString = "mkdir /root/Server/" + username();
 		std::string writeLogString = "rm /root/evolve/evolve-rp.ru/gamemodes/evolve_last_last.amx >> /root/Server/" + username() + "/tmpLog.txt 2>&1";
 
@@ -183,7 +182,7 @@ private:
 		do_write("gamemodeDestroyed | " + output + "\n");
 
 		return;
-	}
+	}*/
 
 	void on_login(const std::string& msg) {
 		std::istringstream in(msg);
