@@ -17,7 +17,7 @@ namespace Client {
 
 	using namespace boost::asio;
 
-	//std::shared_ptr<ClientCore> clientPtr;
+	std::shared_ptr<ClientCore> clientPtr;
 
 	int run_client(const std::string& client_name, const std::string& ip) {
 		ip::tcp::endpoint ep(ip::address::from_string(ip), 8001);
@@ -26,11 +26,11 @@ namespace Client {
 		//ClientCore::ClientCore client = ClientCore::ClientCore(client_name, service);
 		ClientCore client(client_name, service);
 		//clientPtr = client.getptr(). //std::make_shared<ClientCore>(client);
-		//clientPtr = std::make_shared<ClientCore>(client_name, service);
+		clientPtr = std::make_shared<ClientCore>(client_name, service);
 
 		try {
-			//clientPtr.get()->connect(ep);
-			client.connect(ep);
+			clientPtr.get()->connect(ep);
+			//client.connect(ep);
 			//client.loop();
 		}
 		catch (boost::system::system_error& err) {
