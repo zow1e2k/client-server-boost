@@ -3,6 +3,7 @@
 
 #include "ClientCore.h"
 #include "ClientApp.h"
+#include <iostream>
 
 namespace Client {
 
@@ -26,8 +27,8 @@ namespace Client {
 			//client.loop();
 		}
 		catch (boost::system::system_error& err) {
-			/*std::cout << "client terminated " << clientPtr.get()->username()
-				<< ": " << err.what() << std::endl;*/
+			std::cout << "client terminated " << clientPtr.get()->username()
+				<< ": " << err.what() << std::endl;
 			return 0;
 		}
 
@@ -47,6 +48,8 @@ namespace Client {
 			return 1;
 		}
 		catch (boost::system::system_error& err) {
+			std::cout << "client terminated " << clientPtr.get()->username()
+				<< ": " << err.what() << std::endl;
 			return 0;
 		}
 		

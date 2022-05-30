@@ -157,6 +157,7 @@ private:
 		system(removeLogString.c_str());
 
 		do_write("[dirInfoShowed] " + output + "\n");*/
+		std::cout << "[dirInfoShowed]\n";
 		do_write("[dirInfoShowed]\n");
 	}
 

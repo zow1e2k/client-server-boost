@@ -10,6 +10,8 @@ namespace Client {
 	using namespace boost::placeholders;
 	using socket_t = ip::tcp::socket;
 
+	GUIApp* clientGUIApp;
+
 	ClientCore::ClientCore(const std::string& username, io_service &service) : 
 		/*already_read_(500),
 		buff_("aaa"),*/
@@ -17,17 +19,11 @@ namespace Client {
 		started_(true),
 		username_(username)
 	{
-		//Global::x = 3;
+		clientGUIApp = GUIApp::getGUIApp();
 		return;
 	}
 
-	/*std::shared_ptr<ClientCore> ClientCore::getptr()
-	{
-		return std::shared_ptr<ClientCore>();
-	}*/
-
 	socket_t& ClientCore::socket() {
-		//CEF::g_handler->GetBrowser();
 		return socket_; 
 	}
 
@@ -135,6 +131,18 @@ namespace Client {
 	}
 
 	void ClientCore::OnDirInfoShowed(const std::string& msg) {
+		/*CefRefPtr<CefFrame> frame = clientGUIApp.getCefCore()
+			->GetBrowser()
+			->GetMainFrame()
+			->GetV8Context()
+			->GetBrowser()
+			->GetMainFrame();*/
+		std::shared_ptr<Client::GUIApp> gua(clientGUIApp);
+
+		//CefRefPtr<CefFrame> frame = gua->getCefCore()->DoClose();
+		gua->getCefCore()->GetBrowser()->Reload();
+		//gua->getCefCore()->GetBrowser()->GoBack();
+		//guiApp.
 		//Global::g_handler->GetBrowser();
 		//g_handler->GetBrowser();
 		//CEF::CEFCore::

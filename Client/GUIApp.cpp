@@ -4,67 +4,16 @@
 namespace Client {
 	using namespace CEF;
 
-	GUIApp guiApp;
+	GUIApp* guiApp;
 
 	int GUIApp::create(HINSTANCE hInstance, int nCmdShow) {
-		guiApp = Client::GUIApp();
-		int result = guiApp.initCef(hInstance, nCmdShow);
+		//Client::GUIApp* guiApp(GUIApp);
+		Client::GUIApp* ga = new GUIApp();
+		std::shared_ptr<Client::GUIApp> gua(ga);
+		int result = gua->initCef(hInstance, nCmdShow);
+		//this->setCefCore((CEF::CEFCore*)client.get());
+		guiApp = (GUIApp*)gua.get();
 		return result;
-	}
-
-	GUIApp::GUIApp() {
-		return;
-	}
-
-	void GUIApp::setCefCore(CEFCore* cefCore)
-	{
-		this->cefCore_ = cefCore;
-	}
-
-	LRESULT CALLBACK GUIApp::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-	{
-		switch (uMsg) {
-		case WM_DESTROY:
-			CefQuitMessageLoop();
-			PostQuitMessage(0);
-			return 0;
-
-		case WM_SIZE:
-			if (guiApp.cefCore_) {
-				// Resize the browser window and address bar to match
-				//  the new frame
-				// window size
-				RECT rect;
-				GetClientRect(hwnd, &rect);
-				HDWP hdwp = BeginDeferWindowPos(1);
-				hdwp = DeferWindowPos(hdwp, guiApp.cefCore_->GetBrowserHwnd(),
-					NULL, rect.left, rect.top,
-					rect.right - rect.left,
-					rect.bottom - rect.top,
-					SWP_NOZORDER);
-				EndDeferWindowPos(hdwp);
-			}
-
-			break;
-
-		case WM_ERASEBKGND:
-			if (guiApp.cefCore_) {
-				// Dont erase the background if the browser window has
-				//  been loaded
-				// (this avoids flashing)
-				return 0;
-			}
-
-			break;
-
-		case WM_PAINT:
-			PAINTSTRUCT ps;
-			HDC hdc = BeginPaint(hwnd, &ps);
-			EndPaint(hwnd, &ps);
-			return 0;
-		}
-
-		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
 
 	HWND GUIApp::RegisterWindow(HINSTANCE hInstance, int nCmdShow)
@@ -97,6 +46,71 @@ namespace Client {
 
 		ShowWindow(hwnd, nCmdShow);
 		return hwnd;
+	}
+
+	GUIApp::GUIApp() {
+		return;
+	}
+
+	void GUIApp::setCefCore(CEFCore* cefCore)
+	{
+		this->cefCore_ = cefCore;
+	}
+
+	CEFCore* GUIApp::getCefCore()
+	{
+		return this->cefCore_;
+	}
+
+	LRESULT CALLBACK GUIApp::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+	{
+		switch (uMsg) {
+		case WM_DESTROY:
+			CefQuitMessageLoop();
+			PostQuitMessage(0);
+			return 0;
+
+		case WM_SIZE:
+			if (guiApp) {
+				// Resize the browser window and address bar to match
+				//  the new frame
+				// window size
+				RECT rect;
+				GetClientRect(hwnd, &rect);
+				HDWP hdwp = BeginDeferWindowPos(1);
+				hdwp = DeferWindowPos(hdwp, guiApp->getCefCore()->GetBrowserHwnd(),
+					NULL, rect.left, rect.top,
+					rect.right - rect.left,
+					rect.bottom - rect.top,
+					SWP_NOZORDER);
+				EndDeferWindowPos(hdwp);
+			}
+
+			break;
+
+		case WM_ERASEBKGND:
+			if (guiApp) {
+				// Dont erase the background if the browser window has
+				//  been loaded
+				// (this avoids flashing)
+				return 0;
+			}
+
+			break;
+
+		case WM_PAINT:
+			PAINTSTRUCT ps;
+			HDC hdc = BeginPaint(hwnd, &ps);
+			EndPaint(hwnd, &ps);
+			return 0;
+		}
+
+		return DefWindowProc(hwnd, uMsg, wParam, lParam);
+	}
+
+	GUIApp* GUIApp::getGUIApp()
+	{
+		return guiApp;
 	}
 
 	std::string GUIApp::GetApplicationDir()

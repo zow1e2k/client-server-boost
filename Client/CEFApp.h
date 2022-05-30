@@ -13,8 +13,6 @@ namespace CEF {
 			return this;
 		}
 
-		int x;
-
 		void OnWebKitInitialized() OVERRIDE;
 
 		IMPLEMENT_REFCOUNTING(CEFApp);
