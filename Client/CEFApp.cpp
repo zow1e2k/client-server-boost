@@ -5,8 +5,8 @@
 #include "include/wrapper/cef_helpers.h"
 
 namespace CEF {
-
-	CEFApp::CEFApp() {
+	CEFApp::CEFApp()
+	{
 	}
 
 	void CEFApp::OnWebKitInitialized() {

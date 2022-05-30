@@ -6,7 +6,6 @@
 #include "include/cef_browser.h"
 
 namespace CEF {
-
 	class CEFCore : public CefClient, public CefLifeSpanHandler {
 	public:
 		CEFCore();

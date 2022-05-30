@@ -47,6 +47,8 @@ namespace CEF {
 					}
 				}
 
+				
+				//Client::app = this->app;
 				frame->ExecuteJavaScript(jscall, frame->GetURL(), 0);
 
 				 /*If you want your method to return a value, just use

@@ -2,13 +2,7 @@
 #define BOOST_BIND_GLOBAL_PLACEHOLDERS
 
 #include <iostream>
-#include <boost/thread.hpp>
-#include <boost/bind/bind.hpp>
-#include <boost/asio.hpp>
-#include <boost/shared_ptr.hpp>
-#include <boost/enable_shared_from_this.hpp>
 #include "ClientCore.h"
-#include "CEFCore.h"
 
 namespace Client {
 
@@ -23,6 +17,7 @@ namespace Client {
 		started_(true),
 		username_(username)
 	{
+		//Global::x = 3;
 		return;
 	}
 
@@ -140,6 +135,8 @@ namespace Client {
 	}
 
 	void ClientCore::OnDirInfoShowed(const std::string& msg) {
+		//Global::g_handler->GetBrowser();
+		//g_handler->GetBrowser();
 		//CEF::CEFCore::
 		//std::cout << "[Server] Dir info:" << std::endl;
 		//std::cout << msg << std::endl;

@@ -9,8 +9,7 @@
 
 namespace CEF {
 
-	CEFCore::CEFCore() {
-	}
+	CEFCore::CEFCore() {}
 
 	bool CEFCore::DoClose(CefRefPtr<CefBrowser> browser) {
 		return false;
