@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include "ClientCore.h"
+#include "CEFV8Handler.h"
 
 namespace Client {
 
@@ -137,10 +138,11 @@ namespace Client {
 			->GetV8Context()
 			->GetBrowser()
 			->GetMainFrame();*/
-		std::shared_ptr<Client::GUIApp> gua(clientGUIApp);
-
-		//CefRefPtr<CefFrame> frame = gua->getCefCore()->DoClose();
-		gua->getCefCore()->GetBrowser()->Reload();
+		
+		//std::shared_ptr<Client::GUIApp> gua(clientGUIApp);
+		//CefRefPtr<CefFrame> frame = gua->getCefCore()->GetBrowser()->GetMainFrame()->GetV8Context();
+		//gua->getCefCore()->GetBrowser()->Reload();
+		//CefRefPtr<CefFrame> frame = CefV8Context::GetCurrentContext()->GetBrowser()->GetMainFrame();
 		//gua->getCefCore()->GetBrowser()->GoBack();
 		//guiApp.
 		//Global::g_handler->GetBrowser();
@@ -148,16 +150,25 @@ namespace Client {
 		//CEF::CEFCore::
 		//std::cout << "[Server] Dir info:" << std::endl;
 		//std::cout << msg << std::endl;
-
+		//CefV8Value::CreateString(msg);
+		//result->SetValue(msg, CefV8Value::CreateString(msg), V8_PROPERTY_ATTRIBUTE_NONE);
+		//args.push_back(CallbackArg1);
+		//args.push_back(CallbackArg2);
+		CefV8ValueList args;
+		CefRefPtr<CefV8Value> val = CefV8Value::CreateString("sss");
+		CefRefPtr<CefV8Value> intVal = CefV8Value::CreateInt(2);
+		CefString ex = "exception";
+		args.push_back(val);
+		g_cefHandler->Execute("showLS", NULL, args, intVal, ex);
 		//Client::getLS(msg);
-		
-		//CefRefPtr<CefFrame> frame = CefV8Context::GetCurrentContext()->GetBrowser()->GetMainFrame();
-		//std::string jscall = "";
-		//jscall += "showLS('";
-		//jscall += msg;
-		//jscall += "');";
+		/*CefRefPtr<CefFrame> frame = CefV8Context::GetCurrentContext()->GetBrowser()->GetMainFrame();
+		CefRefPtr<CefFrame> frame = CEF::cefHandler.get();
+		std::string jscall = "";
+		jscall += "showLS('";
+		jscall += msg;
+		jscall += "');";
 
-		//frame->ExecuteJavaScript(jscall, frame->GetURL(), 0);
+		frame->ExecuteJavaScript(jscall, frame->GetURL(), 0);*/
 		return;
 	}
 

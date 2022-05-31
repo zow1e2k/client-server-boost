@@ -5,6 +5,7 @@
 #include "include/wrapper/cef_helpers.h"
 
 namespace CEF {
+
 	CEFApp::CEFApp()
 	{
 	}
@@ -33,6 +34,15 @@ namespace CEF {
 			"	};"
 			"})();";
 
-		CefRegisterExtension("v8/app", appJS, new CEFV8Handler(this));
+		//CEFV8Handler cefV8Handler(CEFV8Handler(this));
+		//CEF::cefHandler = new CEFV8Handler(this);
+		//CEF::cefHandler = 
+		g_cefHandler = (CEFV8Handler*) new CEFV8Handler(this);
+		CefRefPtr<CefV8Handler> cefPtr(g_cefHandler);
+		//CefRefPtr<CefV8Handler> CEF::cefHandler(new CEFV8Handler(this));
+		//CefRegisterExtension("v8/app", appJS, new CEFV8Handler(this));
+		//this->setCefCore((CEF::CEFCore*)client.get());
+		//guiApp = (GUIApp*)gua.get();
+		CefRegisterExtension("v8/app", appJS, cefPtr);
 	}
 }

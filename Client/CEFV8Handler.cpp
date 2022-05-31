@@ -21,6 +21,7 @@ namespace CEF {
 				CefString ip = arguments[2]->GetStringValue();
 
 				CefRefPtr<CefFrame> frame = CefV8Context::GetCurrentContext()->GetBrowser()->GetMainFrame();
+				//this->
 
 				std::string jscall = "";
 
@@ -107,6 +108,14 @@ namespace CEF {
 			//frame->ExecuteJavaScript(jscall, frame->GetURL(), 0);
 
 			return true;
+		} else if (name == "ShowLS") {
+			CefRefPtr<CefFrame> frame = CefV8Context::GetCurrentContext()->GetBrowser()->GetMainFrame();
+			std::string jscall = "";
+			jscall += "showLS('";
+			jscall += arguments[0]->GetStringValue();
+			jscall += "');";
+
+			frame->ExecuteJavaScript(jscall, frame->GetURL(), 0);
 		}
 
 		return false;
