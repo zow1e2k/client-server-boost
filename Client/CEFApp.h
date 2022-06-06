@@ -13,7 +13,18 @@ namespace CEF {
 			return this;
 		}
 
-		void OnWebKitInitialized() OVERRIDE;
+		//void OnWebKitInitialized() OVERRIDE;
+		void OnContextCreated(
+			CefRefPtr<CefBrowser> browser,
+			CefRefPtr<CefFrame> frame,
+			CefRefPtr<CefV8Context> context
+		) OVERRIDE;
+		bool OnProcessMessageReceived(
+			CefRefPtr<CefBrowser> browser,
+			CefRefPtr<CefFrame> frame,
+			CefProcessId source_process,
+			CefRefPtr<CefProcessMessage> message
+		) OVERRIDE;
 
 		IMPLEMENT_REFCOUNTING(CEFApp);
 	};

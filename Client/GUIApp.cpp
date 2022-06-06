@@ -175,6 +175,7 @@ namespace Client {
 		GetClientRect(hwnd, &rect);
 
 		CefSettings settings;
+		settings.multi_threaded_message_loop = true;
 		settings.no_sandbox = true;
 		CefString(&settings.log_file).FromASCII("cef_debug.log");
 		CefInitialize(main_args, settings, app, nullptr);
@@ -199,27 +200,19 @@ namespace Client {
 			NULL);
 		int result = 0;
 
-		if (!settings.multi_threaded_message_loop) {
-			// Run the CEF message loop. This function will block until the
-			//  application
-			// recieves a WM_QUIT message.
-			CefRunMessageLoop();
-		}
-		else {
-			// Create a hidden window for message processing.
-			HWND hMessageWnd = CreateMessageWindow(hInstance);
-			MSG msg;
+		// Create a hidden window for message processing.
+		HWND hMessageWnd = CreateMessageWindow(hInstance);
+		MSG msg;
 
-			// Run the application message loop.
-			while (GetMessage(&msg, NULL, 0, 0)) {
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
-			}
-
-			DestroyWindow(hMessageWnd);
-			hMessageWnd = NULL;
-			result = static_cast<int>(msg.wParam);
+		// Run the application message loop.
+		while (GetMessage(&msg, NULL, 0, 0)) {
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
 		}
+
+		DestroyWindow(hMessageWnd);
+		hMessageWnd = NULL;
+		result = static_cast<int>(msg.wParam);
 
 		CefShutdown();
 		return result;

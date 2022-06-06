@@ -1,11 +1,17 @@
 #include "CEFV8Handler.h"
 #include "ClientApp.h"
 #include "GUIApp.h"
+#include "WebKernelConvertor.h"
 
 namespace CEF {
 
 	CEFV8Handler::CEFV8Handler(CefRefPtr<CefApp> app) {
 		this->app = app;
+	}
+
+	std::unordered_map<std::string, JsCallback> CEFV8Handler::getJSCallbacks()
+	{
+		return this->js_callbacks;
 	}
 
 	bool CEFV8Handler::Execute(
@@ -15,7 +21,54 @@ namespace CEF {
 		CefRefPtr<CefV8Value>& retval,
 		CefString& exception
 	) {
-		if (name == "LoginInJS") {
+		CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create(js_execute);
+		CefRefPtr<CefListValue> msg_args = msg->GetArgumentList();
+		CefRefPtr<CefV8Context> context = CefV8Context::GetCurrentContext();
+		CefRefPtr<CefFrame> frame = context->GetFrame();
+
+		auto it = native_funcs.find(name);
+
+		if (it == native_funcs.end()) {
+			return false;
+		}
+
+		if (!FuncDef2CefListValue(name, it->second, arguments, msg_args)) {
+			return false;
+		}
+
+		if (name == native_func_names.AddV8Callback) {
+			std::string fname = arguments[0]->GetStringValue();
+			CefRefPtr<CefV8Value> func = arguments[1];
+
+			if (js_funcs.find(fname) == js_funcs.end()) {
+				return false;
+			}
+
+			js_callbacks[fname] = JsCallback(func, context);
+			return true;
+		} else if (name == native_func_names.Login) {
+			if (arguments.size() != 3) {
+				return false;
+			}
+
+			CefString username = arguments[1]->GetStringValue();
+			CefString password = arguments[2]->GetStringValue();
+
+			if (password != "159") {
+				return false;
+			}
+
+			if (Client::start(username, ip) == 0) {
+				return false;
+			}
+
+
+		}
+
+		frame->SendProcessMessage(PID_BROWSER, msg);
+		return true;
+
+		/*if (name == "LoginInJS") {
 			if ((arguments.size() == 3) && arguments[0]->IsString() && arguments[1]->IsString() && arguments[2]->IsString()) {
 				CefString username = arguments[0]->GetStringValue();
 				CefString password = arguments[1]->GetStringValue();
@@ -54,12 +107,12 @@ namespace CEF {
 				//Client::app = this->app;
 				frame->ExecuteJavaScript(jscall, frame->GetURL(), 0);
 
-				 /*If you want your method to return a value, just use
+				 If you want your method to return a value, just use
 				*  retval, like this:
 				* retval = CefV8Value::CreateString("Hello World!");
 				* you can use any CefV8Value, what means you can return
 				*  arrays, objects or whatever you can create with
-				*  CefV8Value::Create* methods*/
+				*  CefV8Value::Create* methods
 
 				return true;
 			}
@@ -96,10 +149,10 @@ namespace CEF {
 				return true;
 			}
 		} else if (name == "GetLSInJS") {
-			/*CefRefPtr<CefFrame> frame =
+			CefRefPtr<CefFrame> frame =
 				CefV8Context::GetCurrentContext()->GetBrowser()
 				->
-				GetMainFrame();*/
+				GetMainFrame();
 
 			//std::string ls = Client::getLS();
 			Client::execLS();
@@ -112,13 +165,16 @@ namespace CEF {
 			return true;
 		} else if (name == "ShowLSInJS") {
 			CefRefPtr<CefFrame> frame = CefV8Context::GetCurrentContext()->GetBrowser()->GetMainFrame();
-			std::string jscall = "";
-			jscall += "showLS('text');";
+			//std::string jscall = "";
+			//jscall += "showLS('text');";
+			CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create("app");
+			CefRefPtr<CefListValue> msg_args = msg->GetArgumentList();
 
-			frame->ExecuteJavaScript(jscall, frame->GetURL(), 0);
+			//frame->ExecuteJavaScript(jscall, frame->GetURL(), 0);
+			frame->SendProcessMessage(PID_BROWSER, msg);
 			return true;
 		}
 
-		return false;
+		return false;*/
 	}
 }
