@@ -1,18 +1,24 @@
 #include "GUIApp.h"
 #include "CEFApp.h"
+#include <iostream>
 
 namespace Client {
 	using namespace CEF;
 
 	GUIApp* guiApp;
+	std::shared_ptr<Client::GUIApp>* gua;
+	CefRefPtr<CefFrame>* mainFrame;
 
 	int GUIApp::create(HINSTANCE hInstance, int nCmdShow) {
 		//Client::GUIApp* guiApp(GUIApp);
+
 		Client::GUIApp* ga = new GUIApp();
-		std::shared_ptr<Client::GUIApp> gua(ga);
-		int result = gua->initCef(hInstance, nCmdShow);
+		std::shared_ptr<Client::GUIApp> guash(ga);
+		gua = &guash;
+		int result = gua->get()->initCef(hInstance, nCmdShow);
 		//this->setCefCore((CEF::CEFCore*)client.get());
-		guiApp = (GUIApp*)gua.get();
+
+		guiApp = (GUIApp*)gua->get();
 		return result;
 	}
 
@@ -153,7 +159,7 @@ namespace Client {
 		//CefRefPtr<CEFApp> app1(app);
 
 		// Execute the secondary process, if any.
-		int exit_code = CefExecuteProcess(main_args, app.get(), NULL);
+		int exit_code = CefExecuteProcess(main_args, app, NULL);
 
 		if (exit_code >= 0) {
 			exit(exit_code);
@@ -169,15 +175,17 @@ namespace Client {
 		GetClientRect(hwnd, &rect);
 
 		CefSettings settings;
-		CefInitialize(main_args, settings, app.get(), NULL);
+		settings.no_sandbox = true;
+		CefString(&settings.log_file).FromASCII("cef_debug.log");
+		CefInitialize(main_args, settings, app, nullptr);
 		CefWindowInfo info;
 		CefBrowserSettings b_settings;
 		CEF::CEFCore* cefCore = new CEF::CEFCore;
 		CefRefPtr<CefClient> client(cefCore);
 		this->setCefCore((CEF::CEFCore*)client.get());
+		//this->getCefCore()->GetBrowser()->GetHost()->SendKey
 
 		std::string path = "file://" + GetApplicationDir() + "/html/index.html";
-		//std::string path = "file://Z:/Projects/Graduation_Work/Project/Project/x64/Release/html/test.html";
 		CefRefPtr<CefCommandLine> command_line =
 			CefCommandLine::GetGlobalCommandLine();
 
@@ -187,7 +195,7 @@ namespace Client {
 
 		info.SetAsChild(hwnd, rect);
 		CefBrowserHost::CreateBrowser(info,
-			client.get(), path, b_settings, NULL,
+			client, path, b_settings, NULL,
 			NULL);
 		int result = 0;
 
@@ -215,5 +223,20 @@ namespace Client {
 
 		CefShutdown();
 		return result;
+	}
+
+	std::shared_ptr<Client::GUIApp>* getGUA()
+	{
+		return gua;
+	}
+
+	CefRefPtr<CefFrame>* getMainFrame()
+	{
+		return mainFrame;
+	}
+
+	void setMainFrame(CefRefPtr<CefFrame>* f)
+	{
+		mainFrame = f;
 	}
 }

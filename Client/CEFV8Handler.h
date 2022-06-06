@@ -3,7 +3,7 @@
 
 namespace CEF {
 	//CefRefPtr<CefV8Handler> g_cefHandler;
-	CefV8Handler* g_cefHandler;
+	//CefV8Handler* g_cefHandler;
 
 	struct CEFV8Handler : public CefV8Handler {
 		CEFV8Handler(CefRefPtr<CefApp> app);

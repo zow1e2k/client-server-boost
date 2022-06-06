@@ -45,13 +45,14 @@ namespace Client {
 		try {
 			threads.create_thread(boost::bind(Client::run_client, userName, ip));
 			boost::this_thread::sleep(boost::posix_time::millisec(100));
-			return 1;
 		}
 		catch (boost::system::system_error& err) {
 			std::cout << "client terminated " << clientPtr.get()->username()
 				<< ": " << err.what() << std::endl;
 			return 0;
 		}
+
+		return 1;
 		
 		/*threads.create_thread(boost::bind(CefRunMessageLoop));
 		boost::this_thread::sleep(boost::posix_time::millisec(100));*/

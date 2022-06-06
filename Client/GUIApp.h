@@ -8,7 +8,7 @@
 namespace Client {
 	using namespace CEF;
 
-	class GUIApp {
+	class GUIApp : public std::enable_shared_from_this<GUIApp> {
 
 	public:
 		static GUIApp* getGUIApp();
@@ -26,4 +26,8 @@ namespace Client {
 	private:
 		CEFCore* cefCore_;
 	};
+
+	std::shared_ptr<Client::GUIApp>* getGUA();
+	CefRefPtr<CefFrame>* getMainFrame();
+	void setMainFrame(CefRefPtr<CefFrame>* f);
 }

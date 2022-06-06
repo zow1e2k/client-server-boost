@@ -1,5 +1,6 @@
 #include "CEFV8Handler.h"
 #include "ClientApp.h"
+#include "GUIApp.h"
 
 namespace CEF {
 
@@ -22,6 +23,7 @@ namespace CEF {
 
 				CefRefPtr<CefFrame> frame = CefV8Context::GetCurrentContext()->GetBrowser()->GetMainFrame();
 				//this->
+				Client::setMainFrame(&frame);
 
 				std::string jscall = "";
 
@@ -43,11 +45,11 @@ namespace CEF {
 						jscall += "Login";
 						jscall += "('";
 						jscall += username;
+						jscall += " | " + (std::string)frame->GetURL();
 						jscall += " successfully connected";
 						jscall += "');";
 					}
 				}
-
 				
 				//Client::app = this->app;
 				frame->ExecuteJavaScript(jscall, frame->GetURL(), 0);
@@ -108,14 +110,13 @@ namespace CEF {
 			//frame->ExecuteJavaScript(jscall, frame->GetURL(), 0);
 
 			return true;
-		} else if (name == "ShowLS") {
+		} else if (name == "ShowLSInJS") {
 			CefRefPtr<CefFrame> frame = CefV8Context::GetCurrentContext()->GetBrowser()->GetMainFrame();
 			std::string jscall = "";
-			jscall += "showLS('";
-			jscall += arguments[0]->GetStringValue();
-			jscall += "');";
+			jscall += "showLS('text');";
 
 			frame->ExecuteJavaScript(jscall, frame->GetURL(), 0);
+			return true;
 		}
 
 		return false;

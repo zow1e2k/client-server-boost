@@ -6,6 +6,8 @@
 
 namespace CEF {
 
+	extern CefV8Handler* cefV8Handler = NULL;
+
 	CEFApp::CEFApp()
 	{
 	}
@@ -32,17 +34,31 @@ namespace CEF {
 			"        native function GetLSInJS();"
 			"        return GetLSInJS();"
 			"	};"
+			"	app.ShowLSInJS = function() {"
+			"        native function ShowLSInJS();"
+			"        return ShowLSInJS();"
+			"	};"
 			"})();";
 
 		//CEFV8Handler cefV8Handler(CEFV8Handler(this));
 		//CEF::cefHandler = new CEFV8Handler(this);
 		//CEF::cefHandler = 
-		g_cefHandler = (CEFV8Handler*) new CEFV8Handler(this);
-		CefRefPtr<CefV8Handler> cefPtr(g_cefHandler);
-		//CefRefPtr<CefV8Handler> CEF::cefHandler(new CEFV8Handler(this));
+		//g_cefHandler = (CEFV8Handler*) new CEFV8Handler(this);
+		//CefRefPtr<CefV8Handler> cefPtr(g_cefHandler);
+		//CefRefPtr<CefV8Handler> handl(new CEFV8Handler(this));
 		//CefRegisterExtension("v8/app", appJS, new CEFV8Handler(this));
 		//this->setCefCore((CEF::CEFCore*)client.get());
 		//guiApp = (GUIApp*)gua.get();
-		CefRegisterExtension("v8/app", appJS, cefPtr);
+		//CEFV8Handler* ch = new CEFV8Handler(this);
+		//CefRefPtr<CefV8Handler>* handl = (CefRefPtr<CefV8Handler>*)ch;
+		//CEF::gcfh = handl;
+		//CefV8Handler* handl(new CEFV8Handler(this));
+		cefV8Handler = new CEFV8Handler(this);
+		CefRegisterExtension("v8/app", appJS, cefV8Handler);
 	}
+
+	/*CefV8Handler* getCefV8Handler()
+	{
+		return cefV8Handler;
+	}*/
 }
