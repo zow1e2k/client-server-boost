@@ -5,12 +5,16 @@
 #include "ClientCore.h"
 //#include "CEFV8Handler.h"
 #include "CEFApp.h"
+#include <list>
 
 namespace Client {
 
 	using namespace boost::asio;
 	using namespace boost::placeholders;
 	using socket_t = ip::tcp::socket;
+	//std::unordered_map<std::string, std::string> packets;
+	//packets["ss"] = "sdsd";
+
 
 	//GUIApp* clientGUIApp;
 	std::shared_ptr<Client::GUIApp>* guacc;
@@ -36,10 +40,32 @@ namespace Client {
 		return username_;
 	}
 
-	void Client::ClientCore::execLS()
+	std::string Client::ClientCore::exec(const std::string& packetName)
 	{
-		sendPacket("[get_ls]\n");
-		return;
+		sendPacket(packetName + "\n");
+		std::string result = "";
+
+		Sleep(1000);
+
+		for (std::string packet : this->packets) {
+			if (packet.find(packetName) != 0) {
+				continue;
+			}
+
+			result = packet;
+			break;
+		}
+
+		size_t begin = result.find_first_of(packetName);
+		size_t end = result.find_last_of(']') + 1;
+		result.erase(begin, end);
+
+		return result;
+	}
+
+	std::list<std::string> ClientCore::getPackets()
+	{
+		return this->packets;
 	}
 
 	void ClientCore::connect(ip::tcp::endpoint endPoint) {
@@ -109,8 +135,8 @@ namespace Client {
 		else if (msg.find("[evolve_destroyed]") == 0) {
 			//OnGamemodeUpload();
 		}
-		else if (msg.find("[dirInfoShowed]") == 0) {
-			OnDirInfoShowed(msg);
+		else if (msg.find("[get_ls][" + this->username_ + "]") == 0) {
+			this->packets.push_front(msg);
 			return msg;
 		}
 

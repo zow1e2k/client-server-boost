@@ -100,7 +100,7 @@ private:
 			EvolveDestroy(msg);
 		}*/
 		else {
-			std::cerr << "[Console] Invalid message: " << msg << std::endl;
+			//std::cerr << "[Console] Invalid message: " << msg << std::endl;
 			on_invalid();
 		}
 	}
@@ -137,28 +137,28 @@ private:
 	}*/
 
 	void OnGamemodeDirInfo() {
-		/*std::string makeDirString = "mkdir /root/Server/" + username();
-		std::string writeLogString = "ls /root/evolve/evolve-rp.ru/gamemodes >> /root/Server/" + username() + "/tmpLog.txt 2>&1";
+		std::string makeDirString = "mkdir /root/Server/" + username();
+		std::string writeLogString = "ls /root >> /root/Server/" + username() + "/tmpLog.txt 2>&1";
 
 		system(makeDirString.c_str());
 		system(writeLogString.c_str());
 
-		std::fstream file;
+		std::ifstream file;
 		std::string output;
 		std::string pwdLogFile = "/root/Server/" + username() + "/tmpLog.txt";
 		file.open(pwdLogFile);
 
-		if (file) {
-				file >> output;
+		for (std::string line; getline(file, line); ) {
+			output += line + ",";
 		}
 
 		std::string removeLogString = "rm -r /root/Server/" + username();
 		
 		system(removeLogString.c_str());
 
-		do_write("[dirInfoShowed] " + output + "\n");*/
-		std::cout << "[dirInfoShowed]\n";
-		do_write("[dirInfoShowed]\n");
+		//do_write("[dirInfoShowed] " + output + "\n");
+		//std::cout << "[get_ls][" << username_ << "]" << output << "\n";
+		do_write("[get_ls][" + username_ + "]" + output + "\n");
 	}
 
 	/*void OnGamemodeDestroy() {

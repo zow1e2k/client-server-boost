@@ -34,10 +34,6 @@ namespace CEF {
 			"        native function GetLSInJS();"
 			"        return GetLSInJS();"
 			"	};"
-			"	app.ShowLSInJS = function() {"
-			"        native function ShowLSInJS();"
-			"        return ShowLSInJS();"
-			"	};"
 			"})();";
 
 		//CEFV8Handler cefV8Handler(CEFV8Handler(this));

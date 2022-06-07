@@ -35,10 +35,11 @@ namespace Client {
 		return 1;
 	}
 
-	void execLS() {
-		clientPtr.get()->execLS();
-		return;
+	std::string exec(const std::string& packetName) {
+		std::string result = clientPtr.get()->exec(packetName);
+		return result;
 	}
+
 	int start(const std::string& userName, const std::string& ip) {
 		boost::thread_group threads;
 

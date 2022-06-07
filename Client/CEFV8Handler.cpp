@@ -22,8 +22,6 @@ namespace CEF {
 				CefString ip = arguments[2]->GetStringValue();
 
 				CefRefPtr<CefFrame> frame = CefV8Context::GetCurrentContext()->GetBrowser()->GetMainFrame();
-				//this->
-				Client::setMainFrame(&frame);
 
 				std::string jscall = "";
 
@@ -50,72 +48,14 @@ namespace CEF {
 						jscall += "');";
 					}
 				}
-				
-				//Client::app = this->app;
+
 				frame->ExecuteJavaScript(jscall, frame->GetURL(), 0);
-
-				 /*If you want your method to return a value, just use
-				*  retval, like this:
-				* retval = CefV8Value::CreateString("Hello World!");
-				* you can use any CefV8Value, what means you can return
-				*  arrays, objects or whatever you can create with
-				*  CefV8Value::Create* methods*/
-
-				return true;
-			}
-		} else if (name == "CheckConnectInJS") {
-			if ((arguments.size() == 1) && arguments[0]->IsString()) {
-				CefString text = arguments[0]->GetStringValue();
-				CefRefPtr<CefFrame> frame =
-					CefV8Context::GetCurrentContext()->GetBrowser()
-					->
-					GetMainFrame();
-				std::string jscall = "CheckConnect('";
-				jscall += text;
-				jscall += "');";
-				frame->ExecuteJavaScript(jscall, frame->GetURL(), 0);
-
-				return true;
-			}
-		} else if (name == "EvolveUploadInJS") {
-			if ((arguments.size() == 1) && arguments[0]->IsString()) {
-				CefString file = arguments[0]->GetStringValue();
-				CefRefPtr<CefFrame> frame =
-					CefV8Context::GetCurrentContext()->GetBrowser()
-					->
-					GetMainFrame();
-
-				//Client::upload(file);
-				//Client::client.get()->uploadEvolveGamemode(file);
-
-				std::string jscall = "EvolveUpload('";
-				jscall += file;
-				jscall += " uploaded successfully');";
-				frame->ExecuteJavaScript(jscall, frame->GetURL(), 0);
-
 				return true;
 			}
 		} else if (name == "GetLSInJS") {
-			/*CefRefPtr<CefFrame> frame =
-				CefV8Context::GetCurrentContext()->GetBrowser()
-				->
-				GetMainFrame();*/
+			std::string result = Client::exec("[get_ls]");
+			retval = CefV8Value::CreateString(result);
 
-			//std::string ls = Client::getLS();
-			Client::execLS();
-
-			//std::string jscall = "LS('";
-			//jscall += ls;
-			//jscall += "');";
-			//frame->ExecuteJavaScript(jscall, frame->GetURL(), 0);
-
-			return true;
-		} else if (name == "ShowLSInJS") {
-			CefRefPtr<CefFrame> frame = CefV8Context::GetCurrentContext()->GetBrowser()->GetMainFrame();
-			std::string jscall = "";
-			jscall += "showLS('text');";
-
-			frame->ExecuteJavaScript(jscall, frame->GetURL(), 0);
 			return true;
 		}
 
