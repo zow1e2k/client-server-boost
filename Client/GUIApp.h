@@ -1,33 +1,38 @@
 #pragma once
 
-#include "include/cef_app.h"
-#include "include/cef_browser.h"
+//#include "include/cef_app.h"
+//#include "include/cef_browser.h"
+#include "CEFApp.h"
 #include "CEFCore.h"
-//#include "ClientCore.h"
+#include "ClientApp.h"
 
-namespace Client {
-	using namespace CEF;
+namespace GUI {
 
 	class GUIApp : public std::enable_shared_from_this<GUIApp> {
 
 	public:
-		static GUIApp* getGUIApp();
-		static std::string GetApplicationDir();
-		static HWND RegisterWindow(HINSTANCE hInstance, int nCmdShow);
-		static LRESULT CALLBACK MessageWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-		static HWND CreateMessageWindow(HINSTANCE hInstance);
-		static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-		static int create(HINSTANCE hInstance, int nCmdShow);
-		GUIApp();
-		void setCefCore(CEFCore* cefCore);
-		CEFCore* getCefCore();
-		int initCef(HINSTANCE hInstance, int nCmdShow);
+		GUIApp(
+			std::shared_ptr<Client::ClientApp> client,
+			CefRefPtr<CEF::CEFApp> cef,
+			HINSTANCE hInstance,
+			int nCmdShow
+		);
+		~GUIApp();
+
+		std::shared_ptr<Client::ClientApp> getClient();
+		CefRefPtr<CEF::CEFApp> getCefApp();
+		HINSTANCE getInstance();
+		int getCmdShow();
+		CefRefPtr<CEF::CEFCore> getCefCore();
+		void setCefCore(CefRefPtr<CEF::CEFCore> cefCore);
+		CefRefPtr<CefClient> getCefClientGUI();
 
 	private:
-		CEFCore* cefCore_;
+		std::shared_ptr<Client::ClientApp> clientGUI;
+		CefRefPtr<CEF::CEFApp> cefAppGUI;
+		HINSTANCE instance;
+		int cmdShow;
+		CefRefPtr<CEF::CEFCore> cefCoreGUI;
+		CefRefPtr<CefClient> cefClientGUI;
 	};
-
-	std::shared_ptr<Client::GUIApp>* getGUA();
-	CefRefPtr<CefFrame>* getMainFrame();
-	void setMainFrame(CefRefPtr<CefFrame>* f);
 }

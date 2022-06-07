@@ -3,17 +3,12 @@
 
 #include <iostream>
 #include "ClientCore.h"
-//#include "CEFV8Handler.h"
-#include "CEFApp.h"
 
 namespace Client {
 
 	using namespace boost::asio;
 	using namespace boost::placeholders;
 	using socket_t = ip::tcp::socket;
-
-	//GUIApp* clientGUIApp;
-	std::shared_ptr<Client::GUIApp>* guacc;
 
 	ClientCore::ClientCore(const std::string& username, io_service &service) : 
 		/*already_read_(500),
@@ -22,7 +17,6 @@ namespace Client {
 		started_(true),
 		username_(username)
 	{
-		guacc = Client::getGUA();
 		//clientGUIApp = GUIApp::getGUIApp();
 		//clientGUIApp = Client::guiApp;
 		return;
@@ -40,6 +34,20 @@ namespace Client {
 	{
 		sendPacket("[get_ls]\n");
 		return;
+	}
+
+	void ClientCore::setUsername(const std::string& username)
+	{
+	}
+
+	void ClientCore::setEndpoint(boost::asio::ip::tcp::endpoint endPoint)
+	{
+		this->endPoint = endPoint;
+	}
+
+	boost::asio::ip::tcp::endpoint ClientCore::getEndpoint()
+	{
+		return this->endPoint;
 	}
 
 	void ClientCore::connect(ip::tcp::endpoint endPoint) {

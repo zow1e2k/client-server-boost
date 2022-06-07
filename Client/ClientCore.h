@@ -5,7 +5,6 @@
 #include <boost/asio.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
-#include "GUIApp.h"
 
 namespace Client {
 
@@ -24,6 +23,9 @@ namespace Client {
 		void loop();
 		void uploadEvolveGamemode(const std::string& file);
 		void execLS();
+		void setUsername(const std::string& username);
+		void setEndpoint(boost::asio::ip::tcp::endpoint endPoint);
+		boost::asio::ip::tcp::endpoint getEndpoint();
 
 	private:
 		void writeCommand();
@@ -48,5 +50,6 @@ namespace Client {
 		char buff_[max_msg];
 		bool started_;
 		std::string username_;
+		boost::asio::ip::tcp::endpoint endPoint;
 	};
 }

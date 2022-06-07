@@ -1,5 +1,4 @@
 #include "CEFV8Handler.h"
-#include "ClientApp.h"
 #include "GUIApp.h"
 
 namespace CEF {
@@ -23,7 +22,6 @@ namespace CEF {
 
 				CefRefPtr<CefFrame> frame = CefV8Context::GetCurrentContext()->GetBrowser()->GetMainFrame();
 				//this->
-				Client::setMainFrame(&frame);
 
 				std::string jscall = "";
 
@@ -34,21 +32,21 @@ namespace CEF {
 					jscall += " invalid username and/or password";
 					jscall += "');";
 				} else {
-					if (Client::start(username, ip) == 0) {
-						jscall += "Login";
-						jscall += "('";
-						jscall += username;
-						jscall += " cannot connected";
-						jscall += "');";
-					}
-					else {
-						jscall += "Login";
-						jscall += "('";
-						jscall += username;
-						jscall += " | " + (std::string)frame->GetURL();
-						jscall += " successfully connected";
-						jscall += "');";
-					}
+					//if (Client::(username, ip) == 0) {
+						//jscall += "Login";
+						//jscall += "('";
+						//jscall += username;
+						//jscall += " cannot connected";
+						//jscall += "');";
+					//}
+					//else {
+					jscall += "Login";
+					jscall += "('";
+					jscall += username;
+					jscall += " | " + (std::string)frame->GetURL();
+					jscall += " successfully connected";
+					jscall += "');";
+					//}
 				}
 				
 				//Client::app = this->app;
@@ -102,7 +100,7 @@ namespace CEF {
 				GetMainFrame();*/
 
 			//std::string ls = Client::getLS();
-			Client::execLS();
+			//Client::execLS();
 
 			//std::string jscall = "LS('";
 			//jscall += ls;
