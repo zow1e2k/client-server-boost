@@ -1,5 +1,5 @@
 #include "CEFV8Handler.h"
-#include "GUIApp.h"
+//#include "GUIApp.h"
 
 namespace CEF {
 

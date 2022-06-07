@@ -5,10 +5,10 @@
 namespace GUI {
 
 	GUIApp::GUIApp(
-		std::shared_ptr<Client::ClientApp> client,
-		CefRefPtr<CEF::CEFApp> cef,
-		HINSTANCE hInstance,
-		int nCmdShow
+		Client::ClientApp* client,
+		CEF::CEFApp* cef,
+		HINSTANCE* hInstance,
+		int* nCmdShow
 	) {
 		this->clientGUI = client;
 		this->cefAppGUI = cef;
@@ -22,37 +22,37 @@ namespace GUI {
 		return;
 	}
 
-	HINSTANCE GUIApp::getInstance()
+	HINSTANCE* GUIApp::getInstance()
 	{
-		return HINSTANCE();
+		return this->instance;
 	}
 
-	int GUIApp::getCmdShow()
+	int* GUIApp::getCmdShow()
 	{
-		return 0;
+		return this->cmdShow;
 	}
 
-	CefRefPtr<CEF::CEFCore> GUIApp::getCefCore()
+	CEF::CEFCore* GUIApp::getCefCore()
 	{
 		return this->cefCoreGUI;
 	}
 
-	void GUIApp::setCefCore(CefRefPtr<CEF::CEFCore> cefCore)
+	void GUIApp::setCefCore(CEF::CEFCore* cefCore)
 	{
 		this->cefCoreGUI = cefCore;
 	}
 
-	CefRefPtr<CefClient> GUIApp::getCefClientGUI()
+	CefClient* GUIApp::getCefClientGUI()
 	{
 		return this->cefClientGUI;
 	}
 
-	std::shared_ptr<Client::ClientApp> GUIApp::getClient()
+	Client::ClientApp* GUIApp::getClient()
 	{
 		return this->clientGUI;
 	}
 
-	CefRefPtr<CEF::CEFApp> GUIApp::getCefApp() {
+	CEF::CEFApp* GUIApp::getCefApp() {
 		return this->cefAppGUI;
 	}
 }

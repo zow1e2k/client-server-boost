@@ -12,27 +12,27 @@ namespace GUI {
 
 	public:
 		GUIApp(
-			std::shared_ptr<Client::ClientApp> client,
-			CefRefPtr<CEF::CEFApp> cef,
-			HINSTANCE hInstance,
-			int nCmdShow
+			Client::ClientApp* client,
+			CEF::CEFApp* cef,
+			HINSTANCE* hInstance,
+			int* nCmdShow
 		);
 		~GUIApp();
 
-		std::shared_ptr<Client::ClientApp> getClient();
-		CefRefPtr<CEF::CEFApp> getCefApp();
-		HINSTANCE getInstance();
-		int getCmdShow();
-		CefRefPtr<CEF::CEFCore> getCefCore();
-		void setCefCore(CefRefPtr<CEF::CEFCore> cefCore);
-		CefRefPtr<CefClient> getCefClientGUI();
+		Client::ClientApp* getClient();
+		CEF::CEFApp* getCefApp();
+		HINSTANCE* getInstance();
+		int* getCmdShow();
+		CEF::CEFCore* getCefCore();
+		void setCefCore(CEF::CEFCore* cefCore);
+		CefClient* getCefClientGUI();
 
 	private:
-		std::shared_ptr<Client::ClientApp> clientGUI;
-		CefRefPtr<CEF::CEFApp> cefAppGUI;
-		HINSTANCE instance;
-		int cmdShow;
-		CefRefPtr<CEF::CEFCore> cefCoreGUI;
-		CefRefPtr<CefClient> cefClientGUI;
+		Client::ClientApp* clientGUI;
+		CEF::CEFApp* cefAppGUI;
+		HINSTANCE* instance;
+		int* cmdShow;
+		CEF::CEFCore* cefCoreGUI;
+		CefClient* cefClientGUI;
 	};
 }

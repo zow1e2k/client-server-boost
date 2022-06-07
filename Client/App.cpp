@@ -2,14 +2,14 @@
 #define BOOST_BIND_GLOBAL_PLACEHOLDERS
 #include <string>
 #include <algorithm>
-//#include "GUIApp.h"
 #include "ClientApp.h"
 #include "CEFApp.h"
 #include "GUIApp.h"
 #include "boost/make_shared.hpp"
 #include <iostream>
 
-std::shared_ptr<GUI::GUIApp> gui = nullptr;
+CEF::CEFCore* cfcr = 0;
+GUI::GUIApp* gui = 0;
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -20,7 +20,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		return 0;
 
 	case WM_SIZE:
-		if (gui) {
+		if (gui->getCefCore()) {
 			// Resize the browser window and address bar to match
 			//  the new frame
 			// window size
@@ -39,7 +39,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_ERASEBKGND:
-		if (gui) {
+		if (gui->getCefCore()) {
 			// Dont erase the background if the browser window has
 			//  been loaded
 			// (this avoids flashing)
@@ -125,8 +125,8 @@ HWND CreateMessageWindow(HINSTANCE hInstance)
 int initCef(HINSTANCE hInstance, int nCmdShow)
 {
 	CefMainArgs main_args(hInstance);
-
-	CefRefPtr<CEF::CEFApp> app(new CEF::CEFApp);
+	//gui->getCefApp();
+	CefRefPtr<CEF::CEFApp> app(gui->getCefApp());
 	//CefRefPtr<CEFApp> app1(app);
 
 	// Execute the secondary process, if any.
@@ -154,8 +154,10 @@ int initCef(HINSTANCE hInstance, int nCmdShow)
 	//CEF::CEFCore* cefCore = new CEF::CEFCore;
 	CEF::CEFCore* cefCore = new CEF::CEFCore;
 	CefRefPtr<CefClient> client(cefCore);
+	//cfcr = (CEF::CEFCore*)client.get();
+	gui->setCefCore(cefCore);
 	//this->setCefCore((CEF::CEFCore*)client.get());
-	//gui->setCefCore(new CEF::CEFCore());
+	//gui->get()->setCefCore((CefRefPtr<CEFCore>*)client);
 	//this->cefClientGUI = (CefRefPtr<CefClient>)this->cefCoreGUI;
 
 	std::string path = "file://" + GetApplicationDir() + "/html/index.html";
@@ -168,7 +170,7 @@ int initCef(HINSTANCE hInstance, int nCmdShow)
 
 	info.SetAsChild(hwnd, rect);
 	CefBrowserHost::CreateBrowser(info,
-		client, path, b_settings, NULL,
+		gui->getCefCore(), path, b_settings, NULL,
 		NULL);
 	int result = 0;
 
@@ -199,6 +201,12 @@ int initCef(HINSTANCE hInstance, int nCmdShow)
 }
 
 int loop() {
+	for (int i = 0; i < 100; i++) {
+		continue;
+	}
+
+	gui->getCefCore()->GetBrowser()->GetHost()->CloseBrowser(false);
+
 	while (gui->getClient()->getClientCore() == nullptr) {
 		continue;
 	}
@@ -217,16 +225,18 @@ int loop() {
 	return 1;
 }
 
+// œ–Œ¡Œ¬¿“‹ ¡≈« œ¿““≈–ÕŒ¬!
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow)
 {
 	//int result = Client::GUIApp::create(hInstance, nCmdShow);
 
-	std::shared_ptr<Client::ClientApp> client = std::make_shared<Client::ClientApp>();
-	CefRefPtr<CEF::CEFApp> cef(new CEF::CEFApp);
-	gui = std::make_shared<GUI::GUIApp>(client, cef, hInstance, nCmdShow);
+	Client::ClientApp* client = new Client::ClientApp();
+	CEF::CEFApp* cef = new CEF::CEFApp();
+	gui = new GUI::GUIApp(client, cef, &hInstance, &nCmdShow);
+	//gui = &std::make_shared<GUI::GUIApp>(client, cef, hInstance, nCmdShow);
 	initCef(hInstance, nCmdShow);
 
-	/*boost::thread_group threads;
+	boost::thread_group threads;
 	try {
 		threads.create_thread(boost::bind(loop));
 		boost::this_thread::sleep(boost::posix_time::millisec(100));
@@ -234,7 +244,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
 	catch (boost::system::system_error& err) {
 		std::cout << "client terminated " << std::endl;
 		return 0;
-	}*/
+	}
 
 	return 1;
 }
