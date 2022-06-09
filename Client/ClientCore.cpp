@@ -40,20 +40,32 @@ namespace Client {
 		return username_;
 	}
 
-	std::string Client::ClientCore::exec(const std::string& packetName)
+	std::string Client::ClientCore::exec(const std::string& packetName, const std::string& packetArgs)
 	{
-		sendPacket(packetName + "\n");
+		sendPacket(packetName + packetArgs + "\n");
 		std::string result = "";
 
-		Sleep(1000);
+		bool isPacketFound = false;
+		for (int i = 0; i < 10; i++) {
+			for (std::string packet : this->packets) {
+				if (packet.find(packetName) != 0) {
+					continue;
+				}
 
-		for (std::string packet : this->packets) {
-			if (packet.find(packetName) != 0) {
-				continue;
+				isPacketFound = true;
+				result = packet;
+				break;
 			}
 
-			result = packet;
-			break;
+			if (isPacketFound) {
+				break;
+			}
+
+			Sleep(1000);
+		}
+
+		if (result == "") {
+			return "error";
 		}
 
 		size_t begin = result.find_first_of(packetName);
@@ -136,6 +148,10 @@ namespace Client {
 			//OnGamemodeUpload();
 		}
 		else if (msg.find("[get_ls][" + this->username_ + "]") == 0) {
+			this->packets.push_front(msg);
+			return msg;
+		}
+		else if (msg.find("[login][" + this->username_ + "]") == 0) {
 			this->packets.push_front(msg);
 			return msg;
 		}

@@ -7,13 +7,19 @@
 #include <boost/asio.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#include <boost/asio/io_context.hpp>
+#include <boost/system/system_error.hpp>
+#include <mariadb/conncpp.hpp>
 #include <iostream>
 #include <fstream>
 #include <stdio.h>
+#include <vector>
 
 using namespace boost::asio;
 using namespace boost::posix_time;
 io_service service;
+sql::Statement* stmt;
+sql::Connection* mainConnection;
 
 class talk_to_client;
 typedef boost::shared_ptr<talk_to_client> client_ptr;
@@ -92,24 +98,67 @@ private:
 		else if (msg.find("[get_ls]") == 0) {
 			OnGamemodeDirInfo();
 		}
-		/*else if (msg.find("gamemodeUpload") == 0) {
-			OnGamemodeUpload();
-		} else if (msg.find("[evolve_destroy]" == 0) {
-			EvolveDestroy(msg);
-		}  else if (msg.find("[evolve_destroy]" == 0) {
-			EvolveDestroy(msg);
-		}*/
+		else if (msg.find("[login]") == 0) {
+			OnUserLogged(msg);
+		}
 		else {
 			//std::cerr << "[Console] Invalid message: " << msg << std::endl;
 			on_invalid();
 		}
 	}
 
-	/*void OnGamemodeUpload() {
-		do_write("gamemodeUpload\n");
+	void OnUserLogged(std::string msg)
+	{
+		msg.erase(msg.find_first_of('\n'), msg.length() - 1);
 
-		return;
-	}*/
+		//name, password
+		std::string erasedMsg = msg;
+		size_t begin = 0;
+		size_t end = erasedMsg.find_first_of(']') + 1;
+		erasedMsg.erase(begin, end);
+
+		//name
+		std::string name = erasedMsg;
+		begin = name.find_first_of('|');
+		end = name.length() - 1;
+		name.erase(begin, end);
+
+		//password
+		std::string password = erasedMsg;
+		begin = 0;
+		end = password.find_first_of('|') + 1;
+		password.erase(begin, end);
+
+		std::shared_ptr<sql::PreparedStatement> tmpStatement(
+			mainConnection->prepareStatement(
+				"SELECT `id` FROM `Client` WHERE `password` = ? AND `name` = ? LIMIT 1"
+			)
+		);
+
+		sql::SQLString nameSQL = sql::SQLString(name.c_str());
+		sql::SQLString passwordSQL = sql::SQLString(password.c_str());
+		tmpStatement->setString(1, passwordSQL);
+		tmpStatement->setString(2, nameSQL);
+
+		try {
+			std::unique_ptr<sql::ResultSet> res(
+				tmpStatement->executeQuery()
+			);
+
+			while (res->next()) {
+				std::cerr << "[Console]" << (int)res->getInt("id") << "[id: " << username_ << "] successfully connected" << std::endl;
+				do_write("[login][" + username_ + "]successfully connected\n");
+				return;
+			}
+
+			std::cerr << "[Console]" << username_ << " cannot connected" << std::endl;
+			do_write("[login][" + username_ + "]cannot connected\n");
+		}
+
+		catch (sql::SQLException& e) {
+			std::cerr << "Error " << e.what() << std::endl;
+		}
+	}
 
 	/*void EvolveDestroy(std::string& msg) {
 		std::size_t posLit = msg.find("]");
@@ -276,6 +325,27 @@ void handle_accept(talk_to_client::ptr client, const boost::system::error_code& 
 
 int main(int argc, char* argv[]) {
 	std::cout << "[Console] Server has been started\n";
+	sql::Driver* driver = sql::mariadb::get_driver_instance();
+
+	sql::SQLString url("jdbc:mariadb://188.120.229.168:3306/cefremcon");
+
+	std::ifstream file;
+	//std::string str = new std::string(2);
+	std::vector<std::string> propertiesList;
+	std::string pwdProperties = "properties.txt";
+	file.open(pwdProperties);
+
+	for (std::string line; getline(file, line); ) {
+		propertiesList.push_back(line);
+	}
+
+	std::string user = propertiesList[0];
+	std::string password = propertiesList[1];
+
+	sql::Properties properties({ {"user", user}, {"password", password}});
+	std::unique_ptr<sql::Connection> conn(driver->connect(url, properties));
+	mainConnection = conn.get();
+
 	talk_to_client::ptr client = talk_to_client::new_();
 	acceptor.async_accept(client->sock(), boost::bind(handle_accept, client, _1));
 	service.run();

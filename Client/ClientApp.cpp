@@ -15,16 +15,12 @@ namespace Client {
 		ip::tcp::endpoint ep(ip::address::from_string(ip), 8001);
 		
 		io_service service;
-		//ClientCore::ClientCore client = ClientCore::ClientCore(client_name, service);
 		ClientCore client(client_name, service);
-		//clientPtr = client.getptr(). //std::make_shared<ClientCore>(client);
 		clientPtr = std::make_shared<ClientCore>(client_name, service);
 
 		try {
 			clientPtr.get()->connect(ep);
 			clientPtr.get()->loop();
-			//client.connect(ep);
-			//client.loop();
 		}
 		catch (boost::system::system_error& err) {
 			std::cout << "client terminated " << clientPtr.get()->username()
@@ -35,8 +31,8 @@ namespace Client {
 		return 1;
 	}
 
-	std::string exec(const std::string& packetName) {
-		std::string result = clientPtr.get()->exec(packetName);
+	std::string exec(const std::string& packetName, const std::string& packetArgs) {
+		std::string result = clientPtr.get()->exec(packetName, packetArgs);
 		return result;
 	}
 
@@ -54,10 +50,5 @@ namespace Client {
 		}
 
 		return 1;
-		
-		/*threads.create_thread(boost::bind(CefRunMessageLoop));
-		boost::this_thread::sleep(boost::posix_time::millisec(100));*/
-
-		//threads.join_all();
 	}
 }

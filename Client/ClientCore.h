@@ -23,7 +23,7 @@ namespace Client {
 		void connect(ip::tcp::endpoint endPoint);
 		void loop();
 		void uploadEvolveGamemode(const std::string& file);
-		std::string exec(const std::string& packetName);
+		std::string exec(const std::string& packetName, const std::string& packetArgs);
 		std::list<std::string> getPackets();
 
 	private:

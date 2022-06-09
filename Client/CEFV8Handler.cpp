@@ -21,41 +21,16 @@ namespace CEF {
 				CefString password = arguments[1]->GetStringValue();
 				CefString ip = arguments[2]->GetStringValue();
 
-				CefRefPtr<CefFrame> frame = CefV8Context::GetCurrentContext()->GetBrowser()->GetMainFrame();
-
-				std::string jscall = "";
-
-				if (password.ToString() != "1597538624") {
-					jscall += "Login";
-					jscall += "('";
-					jscall += username;
-					jscall += " invalid username and/or password";
-					jscall += "');";
-				} else {
-					if (Client::start(username, ip) == 0) {
-						jscall += "Login";
-						jscall += "('";
-						jscall += username;
-						jscall += " cannot connected";
-						jscall += "');";
-					}
-					else {
-						jscall += "Login";
-						jscall += "('";
-						jscall += username;
-						jscall += " | " + (std::string)frame->GetURL();
-						jscall += " successfully connected";
-						jscall += "');";
-					}
-				}
-
-				frame->ExecuteJavaScript(jscall, frame->GetURL(), 0);
+				Client::start(username, ip);
+				std::string args = (std::string)username + "|" + (std::string)password;
+				std::string result = Client::exec("[login]", args);
+				retval = CefV8Value::CreateString(result);
 				return true;
 			}
 		} else if (name == "GetLSInJS") {
-			std::string result = Client::exec("[get_ls]");
+			std::string args = "";
+			std::string result = Client::exec("[get_ls]", args);
 			retval = CefV8Value::CreateString(result);
-
 			return true;
 		}
 
