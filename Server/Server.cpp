@@ -96,7 +96,10 @@ private:
 			on_clients();
 		}
 		else if (msg.find("[get_ls]") == 0) {
-			OnGamemodeDirInfo();
+			OnGamemodeDirInfo(msg);
+		}
+		else if (msg.find("[cat_file]") == 0) {
+			ReadFile(msg);
 		}
 		else if (msg.find("[login]") == 0) {
 			OnUserLogged(msg);
@@ -160,34 +163,50 @@ private:
 		}
 	}
 
-	/*void EvolveDestroy(std::string& msg) {
-		std::size_t posLit = msg.find("]");
-		std::string file = msg.substr(posLit);
+	void ReadFile (std::string msg) {
+		msg.erase(msg.find_first_of('\n'), msg.length() - 1);
 
-		std::string rmString = "rm /root/evolve/evolve-rp.ru/gamemodes/evolve_last_last.amx >> /root/Server/" + username() + "/tmpLog.txt 2>&1";
-		system(rmString.c_str());
+		//
+		std::string dir = msg;
+		size_t begin = 0;
+		size_t end = dir.find_first_of(']') + 1;
+		dir.erase(begin, end);
+		std::cout << dir << std::endl;
 
-		std::fstream file;
+		std::string makeDirString = "mkdir /root/Server/" + username();
+		std::string writeLogString = "cat " + dir + " >> /root/Server/" + username() + "/tmpLog.txt 2>&1"; // ?
+
+		system(makeDirString.c_str());
+		system(writeLogString.c_str());
+
+		std::ifstream file;
 		std::string output;
 		std::string pwdLogFile = "/root/Server/" + username() + "/tmpLog.txt";
 		file.open(pwdLogFile);
 
-		if (file) {
-			file >> output;
+		for (std::string line; getline(file, line); ) {
+			output += line + ",";
 		}
 
 		std::string removeLogString = "rm -r /root/Server/" + username();
+
 		system(removeLogString.c_str());
+		std::cout << "[cat_file][" << username_ << "]" << output << "\n";
+		do_write("[cat_file][" + username_ + "]" + output + "\n");
+	}
 
-		do_write("[evolve_destroyed]" + output + "\n");
+	void OnGamemodeDirInfo(std::string msg) {
+		msg.erase(msg.find_first_of('\n'), msg.length() - 1);
 
+		//
+		std::string dir = msg;
+		size_t begin = 0;
+		size_t end = dir.find_first_of(']') + 1;
+		dir.erase(begin, end);
+		std::cout << dir << std::endl;
 
-		return;
-	}*/
-
-	void OnGamemodeDirInfo() {
 		std::string makeDirString = "mkdir /root/Server/" + username();
-		std::string writeLogString = "ls /root >> /root/Server/" + username() + "/tmpLog.txt 2>&1";
+		std::string writeLogString = "ls " + dir + " >> /root/Server/" + username() + "/tmpLog.txt 2>&1"; // ?
 
 		system(makeDirString.c_str());
 		system(writeLogString.c_str());
@@ -300,7 +319,7 @@ private:
 	}
 private:
 	ip::tcp::socket sock_;
-	enum { max_msg = 1024 };
+	enum { max_msg = 32768 };
 	char read_buffer_[max_msg];
 	char write_buffer_[max_msg];
 	bool started_;

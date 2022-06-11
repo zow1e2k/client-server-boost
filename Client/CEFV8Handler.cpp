@@ -28,10 +28,21 @@ namespace CEF {
 				return true;
 			}
 		} else if (name == "GetLSInJS") {
-			std::string args = "";
-			std::string result = Client::exec("[get_ls]", args);
-			retval = CefV8Value::CreateString(result);
-			return true;
+			if ((arguments.size() == 1) && arguments[0]->IsString()) {
+				CefString dir = arguments[0]->GetStringValue();
+				std::string args = (std::string)dir;
+				std::string result = Client::exec("[get_ls]", args);
+				retval = CefV8Value::CreateString(result);
+				return true;
+			}
+		} else if (name == "ReadFileInJS") {
+			if ((arguments.size() == 1) && arguments[0]->IsString()) {
+				CefString filename = arguments[0]->GetStringValue();
+				std::string args = (std::string)filename;
+				std::string result = Client::exec("[cat_file]", args);
+				retval = CefV8Value::CreateString(result);
+				return true;
+			}
 		}
 
 		return false;

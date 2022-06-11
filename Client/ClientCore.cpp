@@ -46,7 +46,7 @@ namespace Client {
 		std::string result = "";
 
 		bool isPacketFound = false;
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 1000; i++) {
 			for (std::string packet : this->packets) {
 				if (packet.find(packetName) != 0) {
 					continue;
@@ -61,15 +61,17 @@ namespace Client {
 				break;
 			}
 
-			Sleep(1000);
+			Sleep(100);
 		}
+
+		this->packets.clear();
 
 		if (result == "") {
 			return "error";
 		}
 
-		size_t begin = result.find_first_of(packetName);
-		size_t end = result.find_last_of(']') + 1;
+		size_t begin = 0;
+		size_t end = result.find_first_of(username_) + username_.length() + 1;
 		result.erase(begin, end);
 
 		return result;
@@ -148,6 +150,10 @@ namespace Client {
 			//OnGamemodeUpload();
 		}
 		else if (msg.find("[get_ls][" + this->username_ + "]") == 0) {
+			this->packets.push_front(msg);
+			return msg;
+		}
+		else if (msg.find("[cat_file][" + this->username_ + "]") == 0) {
 			this->packets.push_front(msg);
 			return msg;
 		}

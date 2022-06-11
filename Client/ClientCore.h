@@ -44,7 +44,7 @@ namespace Client {
 		size_t read_complete(const boost::system::error_code& err, size_t bytes);
 
 		socket_t socket_;
-		enum { max_msg = 1024 };
+		enum { max_msg = 32768 };
 		size_t already_read_;
 		char buff_[max_msg];
 		bool started_;
