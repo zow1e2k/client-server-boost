@@ -43,6 +43,37 @@ namespace CEF {
 				retval = CefV8Value::CreateString(result);
 				return true;
 			}
+		} else if (name == "GetProccessesInJS") {
+			std::string args = "";
+			std::string result = Client::exec("[top]", args);
+			retval = CefV8Value::CreateString(result);
+			return true;
+		} else if (name == "GetClientsInJS") {
+			std::string args = "";
+			std::string result = Client::exec("[get_clients]", args);
+			retval = CefV8Value::CreateString(result);
+			return true;
+		} else if (name == "SendMsgInJS") {
+			if ((arguments.size() == 2) && arguments[0]->IsString() && arguments[1]->IsString()) {
+				CefString username = arguments[0]->GetStringValue();
+				CefString message = arguments[1]->GetStringValue();
+				std::string args = (std::string)username + "|" + (std::string)message;
+				std::string result = Client::exec("[send_msg]", args);
+				retval = CefV8Value::CreateString(result);
+				return true;
+			}
+		} else if (name == "GetMessagesInJS") {
+			std::string result = Client::getMessages();
+			retval = CefV8Value::CreateString(result);
+			return true;
+		} else if (name == "CheckLogInJS") {
+			if ((arguments.size() == 1) && arguments[0]->IsString()) {
+				CefString username = arguments[0]->GetStringValue();
+				std::string args = (std::string)username;
+				std::string result = Client::exec("[check_log]", args);
+				retval = CefV8Value::CreateString(result);
+				return true;
+			}
 		}
 
 		return false;

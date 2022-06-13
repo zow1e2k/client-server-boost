@@ -24,6 +24,7 @@ namespace Client {
 		void loop();
 		void uploadEvolveGamemode(const std::string& file);
 		std::string exec(const std::string& packetName, const std::string& packetArgs);
+		std::string getMessages();
 		std::list<std::string> getPackets();
 
 	private:
@@ -50,5 +51,6 @@ namespace Client {
 		bool started_;
 		std::string username_;
 		std::list<std::string> packets;
+		std::list<std::string> messages;
 	};
 }

@@ -78,6 +78,7 @@ public:
 	bool started() const { return started_; }
 	ip::tcp::socket& sock() { return sock_; }
 	std::string username() const { return username_; }
+	int role() const { return role_; }
 	void set_clients_changed() { clients_changed_ = true; }
 
 private:
@@ -101,12 +102,63 @@ private:
 		else if (msg.find("[cat_file]") == 0) {
 			ReadFile(msg);
 		}
+		else if (msg.find("[top]") == 0) {
+			GetProccesses();
+		}
 		else if (msg.find("[login]") == 0) {
 			OnUserLogged(msg);
+		}
+		else if (msg.find("[get_clients]") == 0) {
+			GetClients();
+		}
+		else if (msg.find("[send_msg]") == 0) {
+			SendMessage(msg);
+		}
+		else if (msg.find("[check_log]") == 0) {
+			CheckLog(msg);
 		}
 		else {
 			//std::cerr << "[Console] Invalid message: " << msg << std::endl;
 			on_invalid();
+		}
+	}
+
+	void CheckLog(std::string msg)
+	{
+		msg.erase(msg.find_first_of('\n'), msg.length() - 1);
+
+		//name
+		std::string name = msg;
+		size_t begin = 0;
+		size_t end = name.find_first_of(']') + 1;
+		name.erase(begin, end);
+
+		std::shared_ptr<sql::PreparedStatement> tmpStatement(
+			mainConnection->prepareStatement(
+				"SELECT ClientLog.action FROM ClientLog JOIN Client ON Client.id=ClientLog.user_id WHERE Client.name = ?"
+			)
+		);
+
+		sql::SQLString nameSQL = sql::SQLString(name.c_str());
+		tmpStatement->setString(1, nameSQL);
+
+		try {
+			std::unique_ptr<sql::ResultSet> res(
+				tmpStatement->executeQuery()
+			);
+
+			std::string actions = "";
+
+			while (res->next()) {
+				actions += (std::string)res->getString("action") + ",";
+				std::cout << "a = " << actions << std::endl;
+			}
+
+			do_write("[check_log]" + actions + "\n");
+		}
+
+		catch (sql::SQLException& e) {
+			std::cerr << "Error " << e.what() << std::endl;
 		}
 	}
 
@@ -134,7 +186,7 @@ private:
 
 		std::shared_ptr<sql::PreparedStatement> tmpStatement(
 			mainConnection->prepareStatement(
-				"SELECT `id` FROM `Client` WHERE `password` = ? AND `name` = ? LIMIT 1"
+				"SELECT `id`, `role_id` FROM `Client` WHERE `password` = ? AND `name` = ? LIMIT 1"
 			)
 		);
 
@@ -149,13 +201,14 @@ private:
 			);
 
 			while (res->next()) {
-				std::cerr << "[Console]" << (int)res->getInt("id") << "[id: " << username_ << "] successfully connected" << std::endl;
-				do_write("[login][" + username_ + "]successfully connected\n");
+				role_ = (int)res->getInt("role_id");
+				std::cerr << "[Console]" << " [id: " << (int)res->getInt("id") << "] [Role: " << role_ << "] " << username_ << " successfully connected" << std::endl;
+				do_write("[login]successfully connected\n");
 				return;
 			}
 
 			std::cerr << "[Console]" << username_ << " cannot connected" << std::endl;
-			do_write("[login][" + username_ + "]cannot connected\n");
+do_write("[login]cannot connected\n");
 		}
 
 		catch (sql::SQLException& e) {
@@ -163,7 +216,7 @@ private:
 		}
 	}
 
-	void ReadFile (std::string msg) {
+	void ReadFile(std::string msg) {
 		msg.erase(msg.find_first_of('\n'), msg.length() - 1);
 
 		//
@@ -191,22 +244,12 @@ private:
 		std::string removeLogString = "rm -r /root/Server/" + username();
 
 		system(removeLogString.c_str());
-		std::cout << "[cat_file][" << username_ << "]" << output << "\n";
-		do_write("[cat_file][" + username_ + "]" + output + "\n");
+		do_write("[cat_file]" + output + "\n");
 	}
 
-	void OnGamemodeDirInfo(std::string msg) {
-		msg.erase(msg.find_first_of('\n'), msg.length() - 1);
-
-		//
-		std::string dir = msg;
-		size_t begin = 0;
-		size_t end = dir.find_first_of(']') + 1;
-		dir.erase(begin, end);
-		std::cout << dir << std::endl;
-
+	void GetProccesses() {
 		std::string makeDirString = "mkdir /root/Server/" + username();
-		std::string writeLogString = "ls " + dir + " >> /root/Server/" + username() + "/tmpLog.txt 2>&1"; // ?
+		std::string writeLogString = "top -n 1 -b >> /root/Server/" + username() + "/tmpLog.txt 2>&1"; // ?
 
 		system(makeDirString.c_str());
 		system(writeLogString.c_str());
@@ -221,12 +264,83 @@ private:
 		}
 
 		std::string removeLogString = "rm -r /root/Server/" + username();
-		
-		system(removeLogString.c_str());
 
-		//do_write("[dirInfoShowed] " + output + "\n");
-		//std::cout << "[get_ls][" << username_ << "]" << output << "\n";
-		do_write("[get_ls][" + username_ + "]" + output + "\n");
+		system(removeLogString.c_str());
+		do_write("[top]" + output + "\n");
+	}
+
+	void GetClients() {
+		std::string output = "";
+
+		for (array::const_iterator b = clients.begin(), e = clients.end(); b != e; ++b) {
+			output += (*b)->username() + ",";
+		}
+
+		std::cout << "[get_clients]" << output << "\n";
+		do_write("[get_clients]" + output + "\n");
+	}
+
+	void SendMessage(std::string msg) {
+		msg.erase(msg.find_first_of('\n'), msg.length() - 1);
+
+		//name, message
+		std::string erasedMsg = msg;
+		size_t begin = 0;
+		size_t end = erasedMsg.find_first_of(']') + 1;
+		erasedMsg.erase(begin, end);
+
+		//name
+		std::string name = erasedMsg;
+		begin = name.find_first_of('|');
+		end = name.length() - 1;
+		name.erase(begin, end);
+
+		//message
+		std::string password = erasedMsg;
+		begin = 0;
+		end = password.find_first_of('|') + 1;
+		password.erase(begin, end);
+
+		//std::string output = ;
+
+		for (array::iterator b = clients.begin(), e = clients.end(); b < e; b++) {
+			if ((*b)->username_ == this->username_) {
+				continue;
+			}
+
+			std::cout << "user = " << (*b)->username() << std::endl;
+			(*b)->do_write("[get_msg]" + erasedMsg + "\n");
+		}
+		do_write("[send_msg]OK!\n");
+	}
+
+	void OnGamemodeDirInfo(std::string msg) {
+		msg.erase(msg.find_first_of('\n'), msg.length() - 1);
+
+		std::string dir = msg;
+		size_t begin = 0;
+		size_t end = dir.find_first_of(']') + 1;
+		dir.erase(begin, end);
+		std::cout << dir << std::endl;
+
+		std::string makeDirString = "mkdir /root/Server/" + username();
+		std::string writeLogString = "ls " + dir + " >> /root/Server/" + username() + "/tmpLog.txt 2>&1";
+
+		system(makeDirString.c_str());
+		system(writeLogString.c_str());
+
+		std::ifstream file;
+		std::string output;
+		std::string pwdLogFile = "/root/Server/" + username() + "/tmpLog.txt";
+		file.open(pwdLogFile);
+
+		for (std::string line; getline(file, line); ) {
+			output += line + ",";
+		}
+
+		std::string removeLogString = "rm -r /root/Server/" + username();
+		system(removeLogString.c_str());
+		do_write("[get_ls]" + output + "\n");
 	}
 
 	/*void OnGamemodeDestroy() {
@@ -325,6 +439,7 @@ private:
 	bool started_;
 	std::string username_;
 	deadline_timer timer_;
+	int role_;
 	boost::posix_time::ptime last_ping;
 	bool clients_changed_;
 };

@@ -71,7 +71,7 @@ namespace Client {
 		}
 
 		size_t begin = 0;
-		size_t end = result.find_first_of(username_) + username_.length() + 1;
+		size_t end = result.find_first_of(packetName) + packetName.length();
 		result.erase(begin, end);
 
 		return result;
@@ -125,6 +125,15 @@ namespace Client {
 		return str;
 	}
 
+	std::string ClientCore::getMessages() {
+		std::string result = "";
+		for (std::string msg : this->messages) {
+			result += msg + ",";
+		}
+
+		return result == "" ? "No messages" : result;
+	}
+
 	std::string ClientCore::parsePacket() {
 		std::string msg(buff_, already_read_);
 
@@ -149,15 +158,35 @@ namespace Client {
 		else if (msg.find("[evolve_destroyed]") == 0) {
 			//OnGamemodeUpload();
 		}
-		else if (msg.find("[get_ls][" + this->username_ + "]") == 0) {
+		else if (msg.find("[get_ls]") == 0) {
 			this->packets.push_front(msg);
 			return msg;
 		}
-		else if (msg.find("[cat_file][" + this->username_ + "]") == 0) {
+		else if (msg.find("[cat_file]") == 0) {
 			this->packets.push_front(msg);
 			return msg;
 		}
-		else if (msg.find("[login][" + this->username_ + "]") == 0) {
+		else if (msg.find("[login]") == 0) {
+			this->packets.push_front(msg);
+			return msg;
+		}
+		else if (msg.find("[top]") == 0) {
+			this->packets.push_front(msg);
+			return msg;
+		}
+		else if (msg.find("[get_clients]") == 0) {
+			this->packets.push_front(msg);
+			return msg;
+		}
+		else if (msg.find("[send_msg]") == 0) {
+			this->packets.push_front(msg);
+			return msg;
+		}
+		else if (msg.find("[get_msg]") == 0) {
+			this->messages.push_front(msg);
+			return msg;
+		}
+		else if (msg.find("[check_log]") == 0) {
 			this->packets.push_front(msg);
 			return msg;
 		}

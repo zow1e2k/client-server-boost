@@ -10,13 +10,10 @@ namespace Client {
 	CefRefPtr<CefFrame>* mainFrame;
 
 	int GUIApp::create(HINSTANCE hInstance, int nCmdShow) {
-		//Client::GUIApp* guiApp(GUIApp);
-
 		Client::GUIApp* ga = new GUIApp();
 		std::shared_ptr<Client::GUIApp> guash(ga);
 		gua = &guash;
 		int result = gua->get()->initCef(hInstance, nCmdShow);
-		//this->setCefCore((CEF::CEFCore*)client.get());
 
 		guiApp = (GUIApp*)gua->get();
 		return result;
@@ -34,7 +31,7 @@ namespace Client {
 																		//  window
 																		//  styles.
 			LPCSTR("TestsDatabaseWindow"), // Window class
-			LPCSTR("Application"), // Window text
+			LPCSTR("CefRemCon"), // Window text
 			WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN, // Window
 													//  style
 			// Size and position
@@ -156,16 +153,12 @@ namespace Client {
 		CefMainArgs main_args(hInstance);
 
 		CefRefPtr<CEF::CEFApp> app(new CEF::CEFApp);
-		//CefRefPtr<CEFApp> app1(app);
-
-		// Execute the secondary process, if any.
 		int exit_code = CefExecuteProcess(main_args, app, NULL);
 
 		if (exit_code >= 0) {
 			exit(exit_code);
 		}
 
-		// Register the window class.
 		HWND hwnd = RegisterWindow(hInstance, nCmdShow);
 		if (hwnd == 0) {
 			return false;
@@ -183,7 +176,6 @@ namespace Client {
 		CEF::CEFCore* cefCore = new CEF::CEFCore;
 		CefRefPtr<CefClient> client(cefCore);
 		this->setCefCore((CEF::CEFCore*)client.get());
-		//this->getCefCore()->GetBrowser()->GetHost()->SendKey
 
 		std::string path = "file://" + GetApplicationDir() + "/html/index.html";
 		CefRefPtr<CefCommandLine> command_line =
@@ -200,17 +192,12 @@ namespace Client {
 		int result = 0;
 
 		if (!settings.multi_threaded_message_loop) {
-			// Run the CEF message loop. This function will block until the
-			//  application
-			// recieves a WM_QUIT message.
 			CefRunMessageLoop();
 		}
 		else {
-			// Create a hidden window for message processing.
 			HWND hMessageWnd = CreateMessageWindow(hInstance);
 			MSG msg;
 
-			// Run the application message loop.
 			while (GetMessage(&msg, NULL, 0, 0)) {
 				TranslateMessage(&msg);
 				DispatchMessage(&msg);

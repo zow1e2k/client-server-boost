@@ -36,6 +36,11 @@ namespace Client {
 		return result;
 	}
 
+	std::string getMessages() {
+		std::string result = clientPtr.get()->getMessages();
+		return result;
+	}
+
 	int start(const std::string& userName, const std::string& ip) {
 		boost::thread_group threads;
 
