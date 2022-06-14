@@ -151,7 +151,7 @@ private:
 
 			while (res->next()) {
 				actions += (std::string)res->getString("action") + ",";
-				std::cout << "a = " << actions << std::endl;
+				//std::cout << "a = " << actions << std::endl;
 			}
 
 			do_write("[check_log]" + actions + "\n");
@@ -160,6 +160,60 @@ private:
 		catch (sql::SQLException& e) {
 			std::cerr << "Error " << e.what() << std::endl;
 		}
+
+		//
+		int user_id = GetUserIDByName(username_);
+		std::string action = "check_log->" + name;
+		AddUserLog(user_id, action);
+		//
+	}
+
+	void AddUserLog(int user_id, const std::string action) {
+		std::shared_ptr<sql::PreparedStatement> tmpStatement(
+			mainConnection->prepareStatement(
+				"INSERT INTO ClientLog (action, user_id) VALUES (?, ?)"
+			)
+		);
+
+		sql::SQLString actionSQL = sql::SQLString(action.c_str());
+		tmpStatement->setString(1, actionSQL);
+		tmpStatement->setInt(2, user_id);
+
+		try {
+			tmpStatement->executeQuery();
+		}
+		catch (sql::SQLException& e) {
+			std::cerr << "Error " << e.what() << std::endl;
+		}
+	}
+
+	int GetUserIDByName(std::string name)
+	{
+		std::shared_ptr<sql::PreparedStatement> tmpStatement(
+			mainConnection->prepareStatement(
+				"SELECT id FROM Client WHERE `name` = ?"
+			)
+		);
+
+		sql::SQLString nameSQL = sql::SQLString(name.c_str());
+		tmpStatement->setString(1, nameSQL);
+		int user_id = -1;
+
+		try {
+			std::unique_ptr<sql::ResultSet> res(
+				tmpStatement->executeQuery()
+			);
+
+			while (res->next()) {
+				user_id = (int)res->getInt("id");
+			}
+		}
+
+		catch (sql::SQLException& e) {
+			std::cerr << "Error " << e.what() << std::endl;
+		}
+
+		return user_id;
 	}
 
 	void OnUserLogged(std::string msg)
@@ -245,6 +299,10 @@ do_write("[login]cannot connected\n");
 
 		system(removeLogString.c_str());
 		do_write("[cat_file]" + output + "\n");
+
+		int user_id = GetUserIDByName(username_);
+		std::string action = "read_file->" + dir;
+		AddUserLog(user_id, action);
 	}
 
 	void GetProccesses() {
@@ -267,6 +325,10 @@ do_write("[login]cannot connected\n");
 
 		system(removeLogString.c_str());
 		do_write("[top]" + output + "\n");
+		//
+		int user_id = GetUserIDByName(username_);
+		std::string action = "check_processes";
+		AddUserLog(user_id, action);
 	}
 
 	void GetClients() {
@@ -278,6 +340,10 @@ do_write("[login]cannot connected\n");
 
 		std::cout << "[get_clients]" << output << "\n";
 		do_write("[get_clients]" + output + "\n");
+		//
+		int user_id = GetUserIDByName(username_);
+		std::string action = "check_clients";
+		AddUserLog(user_id, action);
 	}
 
 	void SendMessage(std::string msg) {
@@ -308,10 +374,19 @@ do_write("[login]cannot connected\n");
 				continue;
 			}
 
+			if ((*b)->username_ != name) {
+				continue;
+			}
+
 			std::cout << "user = " << (*b)->username() << std::endl;
 			(*b)->do_write("[get_msg]" + erasedMsg + "\n");
+			break;
 		}
 		do_write("[send_msg]OK!\n");
+
+		int user_id = GetUserIDByName(username_);
+		std::string action = "send_message->" + name;
+		AddUserLog(user_id, action);
 	}
 
 	void OnGamemodeDirInfo(std::string msg) {
@@ -341,31 +416,12 @@ do_write("[login]cannot connected\n");
 		std::string removeLogString = "rm -r /root/Server/" + username();
 		system(removeLogString.c_str());
 		do_write("[get_ls]" + output + "\n");
+
+		//
+		int user_id = GetUserIDByName(username_);
+		std::string action = "directory_info->" + dir;
+		AddUserLog(user_id, action);
 	}
-
-	/*void OnGamemodeDestroy() {
-		std::string makeDirString = "mkdir /root/Server/" + username();
-		std::string writeLogString = "rm /root/evolve/evolve-rp.ru/gamemodes/evolve_last_last.amx >> /root/Server/" + username() + "/tmpLog.txt 2>&1";
-
-		system(makeDirString.c_str());
-		system(writeLogString.c_str());
-
-		std::fstream file;
-		std::string output;
-		std::string pwdLogFile = "/root/Server/" + username() + "/tmpLog.txt";
-		file.open(pwdLogFile);
-
-		if (file) {
-			file >> output;
-		}
-
-		std::string removeLogString = "rm -r /root/Server/" + username();
-		system(removeLogString.c_str());
-
-		do_write("gamemodeDestroyed | " + output + "\n");
-
-		return;
-	}*/
 
 	void on_login(const std::string& msg) {
 		std::istringstream in(msg);
