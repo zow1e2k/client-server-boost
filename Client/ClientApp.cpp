@@ -10,6 +10,7 @@ namespace Client {
 	using namespace boost::asio;
 
 	std::shared_ptr<ClientCore> clientPtr;
+	boost::thread_group threads;
 
 	int run_client(const std::string& client_name, const std::string& ip) {
 		ip::tcp::endpoint ep(ip::address::from_string(ip), 8001);
@@ -41,8 +42,12 @@ namespace Client {
 		return result;
 	}
 
+	int destroy() {
+		threads.interrupt_all();
+		return 1;
+	}
+
 	int start(const std::string& userName, const std::string& ip) {
-		boost::thread_group threads;
 
 		try {
 			threads.create_thread(boost::bind(Client::run_client, userName, ip));

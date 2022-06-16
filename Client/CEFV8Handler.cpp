@@ -74,6 +74,66 @@ namespace CEF {
 				retval = CefV8Value::CreateString(result);
 				return true;
 			}
+		} else if (name == "ChangeRoleInJS") {
+			if ((arguments.size() == 1) && arguments[0]->IsString()) {
+				CefString username = arguments[0]->GetStringValue();
+				std::string args = (std::string)username;
+				std::string result = Client::exec("[change_role]", args);
+				retval = CefV8Value::CreateString(result);
+				return true;
+			}
+		} else if (name == "CreateUserInJS") {
+			if ((arguments.size() == 3) && arguments[0]->IsString() && arguments[1]->IsString() && arguments[2]->IsString()) {
+				CefString username = arguments[0]->GetStringValue();
+				CefString password = arguments[1]->GetStringValue();
+				CefString role = arguments[2]->GetStringValue();
+
+				std::string args = (std::string)username + "|" + (std::string)password + "|" + (std::string)role;
+				std::string result = Client::exec("[create_user]", args);
+				retval = CefV8Value::CreateString(result);
+				return true;
+			}
+		} else if (name == "DisconnectUserInJS") {
+			if ((arguments.size() == 1) && arguments[0]->IsString()) {
+				CefString username = arguments[0]->GetStringValue();
+				std::string args = (std::string)username;
+				std::string result = Client::exec("[disconnect_user]", args);
+				retval = CefV8Value::CreateString(result);
+				return true;
+			}
+		} else if (name == "ExecFileInJS") {
+			if ((arguments.size() == 2) && arguments[0]->IsString() && arguments[1]->IsString()) {
+				CefString dir = arguments[0]->GetStringValue();
+				CefString filename = arguments[1]->GetStringValue();
+				std::string args = (std::string)dir + "|" + (std::string)filename;
+				std::string result = Client::exec("[exec_file]", args);
+				retval = CefV8Value::CreateString(result);
+				return true;
+			}
+		} else if (name == "DownloadFileInJS") {
+			if ((arguments.size() == 2) && arguments[0]->IsString() && arguments[1]->IsString()) {
+				CefString dir = arguments[0]->GetStringValue();
+				CefString filename = arguments[1]->GetStringValue();
+				std::string args = (std::string)dir + "|" + (std::string)filename;
+				std::string result = Client::exec("[download_file]", args);
+				retval = CefV8Value::CreateString(result);
+				return true;
+			}
+		} else if (name == "SendCMDInJS") {
+			if ((arguments.size() == 1) && arguments[0]->IsString()) {
+				CefString cmdname = arguments[0]->GetStringValue();
+				std::string args = (std::string)cmdname;
+				std::string result = Client::exec("[send_cmd]", args);
+				retval = CefV8Value::CreateString(result);
+				return true;
+			}
+		}
+		else if (name == "LogoutInJS") {
+			std::string args = "";
+			std::string result = Client::exec("[logout]", args);
+			Client::destroy();
+			retval = CefV8Value::CreateString(result);
+			return true;
 		}
 
 		return false;

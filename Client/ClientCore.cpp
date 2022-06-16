@@ -6,6 +6,7 @@
 //#include "CEFV8Handler.h"
 #include "CEFApp.h"
 #include <list>
+#include <fstream>
 
 namespace Client {
 
@@ -67,7 +68,7 @@ namespace Client {
 		this->packets.clear();
 
 		if (result == "") {
-			return "error";
+			return "Server doesnt response";
 		}
 
 		size_t begin = 0;
@@ -187,6 +188,58 @@ namespace Client {
 			return msg;
 		}
 		else if (msg.find("[check_log]") == 0) {
+			this->packets.push_front(msg);
+			return msg;
+		}
+		else if (msg.find("[change_role]") == 0) {
+			this->packets.push_front(msg);
+			return msg;
+		}
+		else if (msg.find("[create_user]") == 0) {
+			this->packets.push_front(msg);
+			return msg;
+		}
+		else if (msg.find("[disconnect_user]") == 0) {
+			this->packets.push_front(msg);
+			return msg;
+		}
+		else if (msg.find("[exec_file]") == 0) {
+			this->packets.push_front(msg);
+			return msg;
+		}
+		else if (msg.find("[download_file]") == 0) {
+			system("mkdir Downloads");
+
+			// filename, out
+			std::string erasedMsg = msg;
+			size_t begin = 0;
+			size_t end = erasedMsg.find_first_of("]") + 1;
+			erasedMsg.erase(begin, end);
+
+			// filename
+			std::string filename = erasedMsg;
+			begin = erasedMsg.find_first_of("|");
+			end = erasedMsg.length() - 1;
+			filename.erase(begin, end);
+			
+			// out
+			std::string out = erasedMsg;
+			begin = 0;
+			end = erasedMsg.find_first_of("|") + 1;
+			out.erase(begin, end);
+
+			std::fstream file;
+			file.open(guacc->get()->GetApplicationDir() + "/Downloads/" + filename, std::ios_base::out);
+			file << out << std::endl;
+
+			this->packets.push_front(msg);
+			return msg;
+		}
+		else if (msg.find("[send_cmd]") == 0) {
+			this->packets.push_front(msg);
+			return msg;
+		}
+		else if (msg.find("[logout]") == 0) {
 			this->packets.push_front(msg);
 			return msg;
 		}
